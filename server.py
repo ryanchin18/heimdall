@@ -106,8 +106,8 @@ class TheServer:
 
 
 if __name__ == '__main__':
-    # server = TheServer('', 9090)
-    server = TheServer('', 9090)
+    # server = TheServer('', 9196)
+    server = TheServer('', 9196)
     try:
         server.main_loop()
     except KeyboardInterrupt:
