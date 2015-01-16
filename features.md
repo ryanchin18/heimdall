@@ -1,0 +1,10 @@
+average_request_interval - this feature considers the behaviour of the requester in terms of the average number of request made within a given interval. This is essentially the frequency with which a requester attempts to access a given host. It takes into account the requests as whole not merely in terms of a single page.
+cycling_user_agent - a common attack for DDOS Botnets is to change user agent repeatedly during an attack. This strategy can be quite effective against even the most generalised regex rules. If the IP never repeats its user agent then rules put in place to block requesters using obscure user agents will still be subverted. In the context of a real human user, or even a spider bot, user agent rotation is highly aberrant.
+html_to_image_ratio - This feature considers the type of content that is being requested. It considers if a requester is only retrieving HTML content but no ancillary data such as images, css or javascript files.
+variance_request_interval - While many DDOS attacks use a very simplistic brute force approach, some have incorporated a slightly more sophisticated approach by making burst requests in order to avoid being blocked by simple rules which allow only a certain number of requests within a time frame.
+payload_size_average - this feature looks at the size of the content that a requester is retrieving.
+HTTP_response_code_rate - Considers http response rate, primarily looking for error codes that may signal a cache busting attack.
+request_depth - Normal site users with commonly browse beyond the home page of a given site. Human users interaction with a website will resemble browsing more than that of a botnet.
+request_depth_std - As an adjunct to request depth, this feature considers the standard deviation of a bot's request.
+session_length - This feature also elucidates general behaviour considering the requester's interaction with a given sight in terms of session time.
+percentage_consecutive_requests - To further elucidate the requester's interaction with a given site we additionally consider how many of the requests made were consecutive as another window onto frequency.
