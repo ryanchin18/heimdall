@@ -3,36 +3,16 @@ HTTP request interceptor which entirely written using default python library.
 Author  : Grainier Perera
 Date    : 2015/01/16
 """
-__author__ = 'grainier'
-
 import socket
 import select
 import time
-from http_request import HTTPRequest
 from util.settings import loggers
-
-# load server logger
+from interceptor_old import Destination
+from interceptor_old import HTTPRequest
 logger = loggers['server']
 
 
-class Forward:
-    def __init__(self):
-        self.forward = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        pass
-
-    def start(self, host, port):
-        try:
-            self.forward.connect((host, port))
-            return self.forward
-        except Exception, e:
-            print e
-            return False
-        pass
-
-    pass
-
-
-class Server:
+class Router:
     input_list = []
     channel = {}
 
@@ -62,18 +42,18 @@ class Server:
                     self.on_recv()
 
     def on_accept(self):
-        forward = Forward().start(
+        destination = Destination().start(
             self.config.destination.get('host', '127.0.0.1'),
             self.config.destination.get('port', 80)
         )
         clientsock, clientaddr = self.server.accept()
         self.client = clientaddr
-        if forward:
+        if destination:
             print clientaddr, "has connected"
             self.input_list.append(clientsock)
-            self.input_list.append(forward)
-            self.channel[clientsock] = forward
-            self.channel[forward] = clientsock
+            self.input_list.append(destination)
+            self.channel[clientsock] = destination
+            self.channel[destination] = clientsock
         else:
             print "Can't establish connection with remote server.",
             print "Closing connection with client side", clientaddr
@@ -98,12 +78,21 @@ class Server:
         # here we can parse and/or modify the data before send forward
         request = HTTPRequest(data)
 
+        print(vars(request))
+
         # here we can extract http headers
         if hasattr(request, 'headers'):
+            content_len = int(request.headers.getheader('content-length', 0))
+            post_body = request.rfile.read(content_len)
             print('--------------------------------------------------------')
+            print('body : %s' % post_body)
             print request.headers.dict
             print self.client
             print('--------------------------------------------------------')
 
         # print data
         self.channel[self.s].send(data)
+        pass
+
+    pass
+
