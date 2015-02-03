@@ -3,28 +3,30 @@
 """
 from twisted.internet import protocol, reactor
 from interceptor import ClientProtocol, HTTPRequest
-
-LISTEN_PORT = 9191
-SERVER_PORT = 80
-SERVER_ADDR = "127.0.0.1"
+from util import config
 
 
 class ServerProtocol(protocol.Protocol):
     def __init__(self):
         self.buffer = None
         self.client = None
+        self.config = config
         pass
 
     def connectionMade(self):
         factory = protocol.ClientFactory()
         factory.protocol = ClientProtocol
         factory.server = self
-        reactor.connectTCP(SERVER_ADDR, SERVER_PORT, factory)
+        reactor.connectTCP(
+            self.config.destination.get('host', ''),
+            self.config.destination.get('port', 80),
+            factory
+        )
         pass
 
     # Client => Proxy
     def dataReceived(self, data):
-        #-------------------------------------------------------------------
+        # -------------------------------------------------------------------
         request = HTTPRequest(data)
         print("SP : " + str(self.transport.getPeer()))
         print(vars(request))
@@ -39,7 +41,7 @@ class ServerProtocol(protocol.Protocol):
             print self.client
             print('--------------------------------------------------------')
             pass
-        #-------------------------------------------------------------------
+        # -------------------------------------------------------------------
 
         if self.client:
             self.client.write(data)
@@ -47,9 +49,6 @@ class ServerProtocol(protocol.Protocol):
         else:
             self.buffer = data
             pass
-        pass
-
-    def allContentReceived(self):
         pass
 
     # Proxy => Client
