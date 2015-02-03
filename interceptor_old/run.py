@@ -1,7 +1,7 @@
 __author__ = 'grainier'
 
-from intercept.interceptor import Server
-from util.settings import config, loggers
+from interceptor_old import Router
+from util import config, loggers
 import sys
 
 if __name__ == '__main__':
@@ -15,7 +15,7 @@ if __name__ == '__main__':
     logger.critical('critical message')
 
     # initialize interceptor server
-    server = Server(config)
+    server = Router(config)
     try:
         server.main_loop()
     except KeyboardInterrupt:
