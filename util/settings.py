@@ -1,14 +1,18 @@
-__author__ = 'grainier'
+"""
 
+"""
 from config import Config
 import logging
 import logging.config
+import os
+
+conf_dir = os.path.join(os.path.dirname(__file__), '../conf')
 
 # load the server.conf file
-config = Config(file('../conf/server.conf'))
+config = Config(file('%s/server.conf' % conf_dir))
 
 # load the logging.conf file
-logging.config.fileConfig('../conf/logging.conf')
+logging.config.fileConfig('%s/logging.conf' % conf_dir)
 
 # initialize loggers
 loggers = {
