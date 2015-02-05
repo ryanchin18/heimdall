@@ -32,7 +32,7 @@ LIST_OF_EASY_INSTALL="
 #          Add Enrivonment Variable             #
 #-----------------------------------------------#
 echo "export PYTHONPATH=$PYTHONPATH:${ORION_PATH}" >> ~/.bashrc
-source ~/.bashrc
+. ~/.bashrc
 
 
 #-----------------------------------------------#
