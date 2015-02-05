@@ -45,7 +45,7 @@ echo "deb http://downloads.skewed.de/apt/${DISTRIBUTION} ${DISTRIBUTION} univers
 echo "deb-src http://downloads.skewed.de/apt/${DISTRIBUTION} ${DISTRIBUTION} universe" | sudo tee -a /etc/apt/sources.list.d/graph_tool.list
 
 # Add PGP key
-sudo apt-key add graph_tool.key
+sudo apt-key add ${ORION_PATH}/setup/graph_tool.key
 
 
 #-----------------------------------------------#
