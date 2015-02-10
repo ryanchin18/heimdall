@@ -27,6 +27,10 @@ class ServerProtocol(protocol.Protocol):
 
     # Client => Proxy
     def dataReceived(self, data):
+
+        # Need to get HTTP method / command (GET, PUT, POST)
+        # Need to get http_ version
+
         # ------------------------------------------------------------
         # here we can extract http request content
         request = HTTPRequest(data)

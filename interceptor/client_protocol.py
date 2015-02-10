@@ -17,6 +17,10 @@ class ClientProtocol(protocol.Protocol):
 
     # Server => Proxy
     def dataReceived(self, data):
+        # Need to get response code / specially if there is an Error
+        # Need to get time (If there is a way)
+
+
         # ------------------------------------------------------------
         # here we can extract http response content
         response = parse_response(data)
