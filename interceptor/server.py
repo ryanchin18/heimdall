@@ -7,13 +7,15 @@ from interceptor import ServerProtocol
 from util import config
 
 
-def main():
+def run():
     factory = protocol.ServerFactory()
     factory.protocol = ServerProtocol
 
     reactor.listenTCP(config.interceptor.get('port', 9191), factory)
     reactor.run()
+    pass
 
 
 if __name__ == '__main__':
-    main()
+    run()
+    pass

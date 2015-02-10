@@ -1,8 +1,8 @@
 """
 Parse socket recv buffer in to HTTPRequest
-http://stackoverflow.com/questions/2115410/does-python-have-a-module-for-parsing-http-requests-and-responses
-Author  : Grainier Perera
-Date    : 2015/01/16
+Refer to    : http://stackoverflow.com/questions/2115410/does-python-have-a-module-for-parsing-http-requests-and-responses
+Author      : Grainier Perera
+Date        : 2015/01/16
 """
 from BaseHTTPServer import BaseHTTPRequestHandler
 from StringIO import StringIO

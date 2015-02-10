@@ -2,37 +2,50 @@
 
 """
 from twisted.internet import protocol
-from interceptor import HTTPRequest
+from interceptor import parse_response
 
 
 class ClientProtocol(protocol.Protocol):
+    def __init__(self):
+        pass
+
     def connectionMade(self):
         self.factory.server.client = self
         self.write(self.factory.server.buffer)
         self.factory.server.buffer = ''
-        print("CP : " + str(self.transport.getPeer()))
-
+        pass
 
     # Server => Proxy
     def dataReceived(self, data):
-        self.factory.server.write(data)
+        # ------------------------------------------------------------
+        # here we can extract http response content
+        response = parse_response(data)
+        content = response.read(len(data))
+        print("FROM SERVER")
+        print("Server IP : " + str(self.transport.getPeer()))
+        print "status:", response.status
+        print "Date:", response.getheader('Date')
+        print "Server:", response.getheader('Server')
+        print "X-Powered-By:", response.getheader('X-Powered-By')
+        print "Content-Length:", response.getheader('Content-Length')
+        print "Keep-Alive:", response.getheader('Keep-Alive')
+        print "Connection:", response.getheader('Connection')
+        print "Content-Type:", response.getheader('Content-Type')
+        print "Data Length:", len(data)
+        print "Content Length:", len(content)
+        print "Content Size:", len(content) / 1024, 'kb'
+        print "Content:", content
+        # ------------------------------------------------------------
 
-        #-------------------------------------------------------------------
-        request = HTTPRequest(data)
-        print(vars(request))
-        # here we can extract http headers
-        if hasattr(request, 'headers'):
-            content_len = int(request.headers.getheader('content-length', 0))
-            post_body = request.rfile.read(content_len)
-            print('--------------------------------------------------------')
-            print("FROM SERVER")
-            print('body : %s' % post_body)
-            print request.headers.dict
-            print self.client
-            print('--------------------------------------------------------')
-        #-------------------------------------------------------------------
+        # continue with the response
+        self.factory.server.write(data)
+        pass
 
     # Proxy => Server
     def write(self, data):
         if data:
             self.transport.write(data)
+            pass
+        pass
+
+    pass
