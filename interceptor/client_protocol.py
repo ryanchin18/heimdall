@@ -20,7 +20,6 @@ class ClientProtocol(protocol.Protocol):
         # Need to get response code / specially if there is an Error
         # Need to get time (If there is a way)
 
-
         # ------------------------------------------------------------
         # here we can extract http response content
         response = parse_response(data)
@@ -40,6 +39,12 @@ class ClientProtocol(protocol.Protocol):
         print "Content Size:", len(content) / 1024, 'kb'
         print "Content:", content
         # ------------------------------------------------------------
+
+        # Manipulate responses
+        # Only if it seems to be ref is disabled / or faked append 2 values.
+        #   1. md5 encoded referer as o_ref
+        #   2. verification o_ver
+        man_data = data
 
         # continue with the response
         self.factory.server.write(data)
