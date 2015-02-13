@@ -34,27 +34,27 @@ class ServerProtocol(protocol.Protocol):
         # content = request.rfile.read(len(data)) # this doesn't seem to be working
         content = StringIO(data).read(len(data))
         self.request_uri = request.requestline.replace(request.command, '').replace(request.request_version, '').strip()
-        print "FROM CLIENT"
-        print "Client:", str(self.transport.getPeer())
-        print "Client IP:", str(self.transport.getPeer().host)
-        print "Client PORT:", str(self.transport.getPeer().port)  # this can be changed very frequently
-        print "Command:", request.command
-        print "Protocol-Version:", request.protocol_version
-        print "Request-Version:", request.request_version
-        print "Request-URI:", self.request_uri
-        print "Host:", request.headers.get('Host')
-        print "Referer:", request.headers.get('Referer')
-        print "User-Agent:", request.headers.get('User-Agent')
-        print "Accept:", request.headers.get('Accept')
-        print "Accept-Language:", request.headers.get('Accept-Language')
-        print "Accept-Encoding:", request.headers.get('Accept-Encoding')
-        print "DNT:", request.headers.get('DNT')
-        print "Connection:", request.headers.get('Connection')
-        print "Cache-Control:", request.headers.get('Cache-Control')
-        print "Data Length:", len(data)
-        print "Content Length:", len(content)
-        print "Content Size:", len(content) / 1024, 'kb'
-        print "Content:", content
+        # print "FROM CLIENT"
+        # print "Client:", str(self.transport.getPeer())
+        # print "Client IP:", str(self.transport.getPeer().host)
+        # print "Client PORT:", str(self.transport.getPeer().port)  # this can be changed very frequently
+        # print "Command:", request.command
+        # print "Protocol-Version:", request.protocol_version
+        # print "Request-Version:", request.request_version
+        # print "Request-URI:", self.request_uri
+        # print "Host:", request.headers.get('Host')
+        # print "Referer:", request.headers.get('Referer')
+        # print "User-Agent:", request.headers.get('User-Agent')
+        # print "Accept:", request.headers.get('Accept')
+        # print "Accept-Language:", request.headers.get('Accept-Language')
+        # print "Accept-Encoding:", request.headers.get('Accept-Encoding')
+        # print "DNT:", request.headers.get('DNT')
+        # print "Connection:", request.headers.get('Connection')
+        # print "Cache-Control:", request.headers.get('Cache-Control')
+        # print "Data Length:", len(data)
+        # print "Content Length:", len(content)
+        # print "Content Size:", len(content) / 1024, 'kb'
+        # print "Content:", content
         # ------------------------------------------------------------
         # continue with the response
         if self.client:
