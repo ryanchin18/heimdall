@@ -19,7 +19,9 @@ DISTRIBUTION=$(lsb_release -s -c)
 LIST_OF_APPS="
     python-setuptools
     python-dev
+    python-software-properties
     python-graph-tool
+    redis-server
     "
 
 # List of easy install applications to install
@@ -50,6 +52,12 @@ echo "deb-src http://downloads.skewed.de/apt/${DISTRIBUTION} ${DISTRIBUTION} uni
 
 # Add PGP key
 sudo apt-key add ${ORION_PATH}/setup/graph_tool.key
+
+
+#-----------------------------------------------#
+#           Installing Redis Server             #
+#-----------------------------------------------#
+sudo add-apt-repository -y ppa:rwky/redis
 
 
 #-----------------------------------------------#
