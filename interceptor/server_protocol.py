@@ -9,6 +9,7 @@ from util import config
 
 class ServerProtocol(protocol.Protocol):
     def __init__(self):
+        self.request_uri = None
         self.buffer = None
         self.client = None
         self.config = config
@@ -27,17 +28,20 @@ class ServerProtocol(protocol.Protocol):
 
     # Client => Proxy
     def dataReceived(self, data):
-
-        # Need to get HTTP method / command (GET, PUT, POST)
-        # Need to get http_ version
-
         # ------------------------------------------------------------
         # here we can extract http request content
         request = HTTPRequest(data)
         # content = request.rfile.read(len(data)) # this doesn't seem to be working
         content = StringIO(data).read(len(data))
-        print("FROM CLIENT")
-        print("Client IP: " + str(self.transport.getPeer()))
+        self.request_uri = request.requestline.replace(request.command, '').replace(request.request_version, '').strip()
+        print "FROM CLIENT"
+        print "Client:", str(self.transport.getPeer())
+        print "Client IP:", str(self.transport.getPeer().host)
+        print "Client PORT:", str(self.transport.getPeer().port)  # this can be changed very frequently
+        print "Command:", request.command
+        print "Protocol-Version:", request.protocol_version
+        print "Request-Version:", request.request_version
+        print "Request-URI:", self.request_uri
         print "Host:", request.headers.get('Host')
         print "Referer:", request.headers.get('Referer')
         print "User-Agent:", request.headers.get('User-Agent')
@@ -52,7 +56,6 @@ class ServerProtocol(protocol.Protocol):
         print "Content Size:", len(content) / 1024, 'kb'
         print "Content:", content
         # ------------------------------------------------------------
-
         # continue with the response
         if self.client:
             self.client.write(data)
