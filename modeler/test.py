@@ -49,6 +49,27 @@ graph.vertex_properties["content"] = graph.new_vertex_property("string")  # TODO
 # print "Host:", request.headers.get('Host')
 # print "User-Agent:", request.headers.get('User-Agent')
 
+# print "Client:", str(self.transport.getPeer())
+# print "Client IP:", str(self.transport.getPeer().host)
+# print "Client PORT:", str(self.transport.getPeer().port)  # this can be changed very frequently
+# print "Command:", request.command
+# print "Protocol-Version:", request.protocol_version
+# print "Request-Version:", request.request_version
+# print "Request-URI:", request_uri
+# print "Host:", request.headers.get('Host')
+# print "Referer:", request.headers.get('Referer')
+# print "User-Agent:", request.headers.get('User-Agent')
+# print "Accept:", request.headers.get('Accept')
+# print "Accept-Language:", request.headers.get('Accept-Language')
+# print "Accept-Encoding:", request.headers.get('Accept-Encoding')
+# print "DNT:", request.headers.get('DNT')
+# print "Connection:", request.headers.get('Connection')
+# print "Cache-Control:", request.headers.get('Cache-Control')
+# print "Data Length:", len(data)
+# print "Content Length:", len(content)
+# print "Content Size:", len(content) / 1024, 'kb'
+# print "Content:", content
+
 graph.save("graph.xml.gz")
 g2 = gt.load_graph("graph.xml.gz")
 # g and g2 should be copies of each other
