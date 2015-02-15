@@ -1,11 +1,15 @@
 """
 
 """
+import httplib
 import re
 import hashlib
 from twisted.internet import protocol
+from urlparse import urlparse, parse_qs
 from interceptor import parse_response
+from modeler import BaseGraph
 from util import config
+import redis
 
 
 class ClientProtocol(protocol.Protocol):
@@ -26,7 +30,11 @@ class ClientProtocol(protocol.Protocol):
         # ------------------------------------------------------------
         # here we can extract http response content
         response = parse_response(data)
-        content = response.read(len(data))
+        try:
+            content = response.read(len(data))
+        except httplib.IncompleteRead as e:
+            content = e.partial
+
         rq_uri = self.factory.server.request_uri
         print "Request-URI", rq_uri
         # print "FROM SERVER"
@@ -50,21 +58,31 @@ class ClientProtocol(protocol.Protocol):
         # Manipulate responses
         # Only if it seems to be ref is disabled / or faked
         # append md5 encoded referer as md5_ref
+        man_data = data
+
+        url = urlparse(rq_uri)
+        rq_uri = url.path
+        rq_params = parse_qs(url.query)
+        rq_ref = rq_params['o_ref'][0] if 'o_ref' in rq_params else None
 
         # md5 the rq_uri
         md5_ref = hashlib.md5(rq_uri).hexdigest()
 
-        # TODO : add to redis (as reference)
+        # ------------------------------------------------------------
+        # add to redis (as reference)
+        r = redis.StrictRedis(self.config.redis.get('host', '127.0.0.1'), self.config.redis.get('port', '6379'))
+        r.set('url_{}'.format(md5_ref), rq_uri)
 
-        man_data = data
-        # man_data = unicode(data, 'utf8') # do not use unicode
-
-        # strip get parameters
-        try:
-            rq_uri = rq_uri[:rq_uri.index('?')]
-            pass
-        except ValueError:
-            pass
+        # add to graph
+        b = BaseGraph()
+        b.add_edge(
+            {'vertex_id': rq_ref},
+            {'vertex_id': md5_ref}
+        )
+        b.print_graph()
+        b.save()
+        b = None
+        # ------------------------------------------------------------
 
         # get the file type (file extinction)
         try:
@@ -74,24 +92,38 @@ class ClientProtocol(protocol.Protocol):
             f_type = None
             pass
 
-        if f_type not in self.config.IGNORE_FILE_TYPES:
-            # If the file type not in IGNORE_FILE_TYPES, manipulate the content and inject o_ref values
-            # inject for href surround with " or ' or none of them ie : href=about.php
-            # ur'href=([\"|\'])([^"]+)([\"|\'])'
-            man_data = re.sub(ur'href(=\"|=\'|=)(.*?)(\"|\'|>| |/>)', (
+        if f_type not in self.config.RESOURCE_FILE_TYPES:
+            # if the file type not in RESOURCE_FILE_TYPES, manipulate the content and inject o_ref values
+            man_data = re.sub(ur'(href|src)(=\"|=\'|=)(.*?)(\"|\'|>| |/>)', (
                 lambda m:
-                    'href{0}{1}&o_ref={3}{2}'.format(m.group(1), m.group(2), m.group(3), md5_ref) if '?' in m.group(2)
-                    else 'href{0}{1}?o_ref={3}{2}'.format(m.group(1), m.group(2), m.group(3), md5_ref)
+                    '{0}{1}{2}&o_ref={4}{3}'.format(
+                        m.group(1),
+                        m.group(2),
+                        m.group(3),
+                        m.group(4),
+                        md5_ref
+                    )
+                    if '?' in m.group(3)
+                    else '{0}{1}{2}?o_ref={4}{3}'.format(
+                        m.group(1),
+                        m.group(2),
+                        m.group(3),
+                        m.group(4),
+                        md5_ref
+                    )
             ), data)
 
-            # TODO - Have to fix content length according to new content
+            # fix content length according to new content
             cl_diff = len(man_data) - len(data)
             man_data = re.sub(ur'Content-Length(?::|: )(\d+)(?:\n|\r\n)', (
                 lambda m:
-                    'Content-Length: {}\r\n'.format(str(int(m.group(1)) + cl_diff))
+                    'Content-Length: {}\r\n'.format(
+                        str(int(m.group(1)) + cl_diff)
+                    )
             ), man_data)
-            print "DATA Length:",
-            print "MAN DATA Length:",
+
+            print "DATA Length:", len(data)
+            print "MAN DATA Length:", len(man_data)
             pass
 
         # ------------------------------------------------------------
