@@ -10,6 +10,7 @@ from util import config
 class ServerProtocol(protocol.Protocol):
     def __init__(self):
         self.request_uri = None
+        self.referer = None
         self.buffer = None
         self.client = None
         self.config = config
@@ -28,12 +29,17 @@ class ServerProtocol(protocol.Protocol):
 
     # Client => Proxy
     def dataReceived(self, data):
-        # ------------------------------------------------------------
         # here we can extract http request content
         request = HTTPRequest(data)
         # content = request.rfile.read(len(data)) # this doesn't seem to be working
         content = StringIO(data).read(len(data))
-        self.request_uri = request.requestline.replace(request.command, '').replace(request.request_version, '').strip()
+        self.request_uri = request.requestline \
+            .replace(request.command, '') \
+            .replace(request.request_version, '') \
+            .strip()
+        self.referer = request.headers.get('Referer')
+
+        # ------------------------------------------------------------
         # print "FROM CLIENT"
         # print "Client:", str(self.transport.getPeer())
         # print "Client IP:", str(self.transport.getPeer().host)
@@ -43,7 +49,7 @@ class ServerProtocol(protocol.Protocol):
         # print "Request-Version:", request.request_version
         # print "Request-URI:", self.request_uri
         # print "Host:", request.headers.get('Host')
-        # print "Referer:", request.headers.get('Referer')
+        print "Referer:", request.headers.get('Referer')
         # print "User-Agent:", request.headers.get('User-Agent')
         # print "Accept:", request.headers.get('Accept')
         # print "Accept-Language:", request.headers.get('Accept-Language')
@@ -56,6 +62,7 @@ class ServerProtocol(protocol.Protocol):
         # print "Content Size:", len(content) / 1024, 'kb'
         # print "Content:", content
         # ------------------------------------------------------------
+
         # continue with the response
         if self.client:
             self.client.write(data)
