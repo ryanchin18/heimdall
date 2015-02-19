@@ -7,7 +7,7 @@ import hashlib
 from twisted.internet import protocol
 from urlparse import urlparse, parse_qs
 from interceptor import parse_response
-from modeler import BaseGraph
+from modeler import SessionGraph
 from util import config
 import redis
 
@@ -39,13 +39,14 @@ class ClientProtocol(protocol.Protocol):
 
         rq_uri = self.factory.server.request_uri
         rq_ref_url = self.factory.server.referer
+        rq_cilent_ip = str(self.factory.server.transport.getPeer().host)
 
         # this request's response url will be the referrer of
         # requests originated from rendered response
         url = urlparse(rq_uri)
         rq_uri_path = url.path if url.path == '/' else url.path.rstrip('/')
         res_ref = hashlib.md5(rq_uri_path).hexdigest()
-        self.redis.set('url_{}'.format(res_ref), rq_uri_path)
+        self.redis.set('session:{0}.url.{1}'.format(rq_cilent_ip, res_ref), rq_uri_path)
 
         if rq_ref_url:
             # client request has referer without "o_ref" injecting
@@ -53,7 +54,7 @@ class ClientProtocol(protocol.Protocol):
             ref_u = urlparse(rq_ref_url)
             rq_ref_path = ref_u.path if ref_u.path == '/' else ref_u.path.rstrip('/')
             rq_ref = hashlib.md5(rq_ref_path).hexdigest()
-            self.redis.set('url_{}'.format(rq_ref), rq_ref_path)
+            self.redis.set('session:{0}.url.{1}'.format(rq_cilent_ip, rq_ref), rq_ref_path)
 
             pass
         else:
@@ -107,34 +108,34 @@ class ClientProtocol(protocol.Protocol):
             pass
 
         # ------------------------------------------------------------
-        # add to graph
-        b = BaseGraph()
+        # TODO : Need to get time (If there is a way)
+        r_server_ip = str(self.transport.getPeer().host)
+        r_client_ip = rq_cilent_ip
+        r_response_status = response.status
+        r_date = response.getheader('Date')
+        r_server = response.getheader('Server')
+        r_x_powered_by = response.getheader('X-Powered-By')
+        r_res_content_length = int(response.getheader('Content-Length')) if response.getheader('Content-Length') else len(content)
+        r_keep_alive = response.getheader('Keep-Alive')
+        r_connection = response.getheader('Connection')
+        r_content_type = response.getheader('Content-Type')
+        r_data_length = ori_len
+        r_res_content_size = r_res_content_length / 1024, 'kb'
+        r_res_content = content
+        print "Request-URI", rq_uri_path
+        print "Content-Length:", response.getheader('Content-Length')
+
+        # ------------------------------------------------------------
+        # add to session graph
+        b = SessionGraph(r_client_ip)
         b.add_edge(
             {'vertex_id': rq_ref},
             {'vertex_id': res_ref}
         )
         b.print_graph()
         b.save()
-        # ------------------------------------------------------------
-        # TODO : Need to get time (If there is a way)
-        print "Request-URI", rq_uri_path
-        # print "FROM SERVER"
-        # print "Server IP : ", str(self.transport.getPeer())
-        # print "Client IP : ", str(self.factory.server.transport.getPeer())
-        # print "status:", response.status
-        # print "Date:", response.getheader('Date')
-        # print "Server:", response.getheader('Server')
-        # print "X-Powered-By:", response.getheader('X-Powered-By')
-        print "Content-Length:", response.getheader('Content-Length')
-        # print "Keep-Alive:", response.getheader('Keep-Alive')
-        # print "Connection:", response.getheader('Connection')
-        # print "Content-Type:", response.getheader('Content-Type')
-        # print "Data Length:", ori_len
-        print "Content Length:", len(content)
-        # print "Content Size:", len(content) / 1024, 'kb'
-        # print "Content:", content
-        # ------------------------------------------------------------
 
+        # ------------------------------------------------------------
         # continue with the response
         self.factory.server.write(data)
         pass

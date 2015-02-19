@@ -11,3 +11,15 @@ WAYS TO HAVE REFERER
 2. Use Cookies - meh
 3. JavaScript (May Be) - Add refer parameter to each query - http://stackoverflow.com/questions/9406954/jquery-replace-all-href-with-onclick-window-location
 3. Do the same thing on server side - Add refer parameter to each query - http://stackoverflow.com/questions/9406954/jquery-replace-all-href-with-onclick-window-location
+
+
+redis key patterns
+
+storing vertex index
+session:{ip}.vertex.{hash}
+
+storing real url for hash
+session:{ip}.url.{hash}
+
+storing session key for expiration
+session:{ip}
