@@ -78,7 +78,7 @@ class SessionGraph(object):
         self.graph.vertex_properties["original_index"][v] = v_index
 
         #  TODO : This is bad, DO it right
-        self.graph.vertex_properties["url"][v] = self.redis.get('session:{0}.url.{1}'.format(self.session, vertex_id))
+        self.graph.vertex_properties["url"][v] = self.redis.get('session:any.url.{0}'.format(vertex_id))
         # TODO : add other properties here, if there's any
 
         # add index to redis

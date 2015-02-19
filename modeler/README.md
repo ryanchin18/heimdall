@@ -18,8 +18,8 @@ redis key patterns
 storing vertex index
 session:{ip}.vertex.{hash}
 
-storing real url for hash
-session:{ip}.url.{hash}
+storing real url for hash (for any session url hash will be the same)
+session:any.url.{hash}
 
 storing session key for expiration
 session:{ip}

@@ -8,7 +8,7 @@ class BaseGraph(SessionGraph):
         SessionGraph.__init__(self, 'base', temp=False)
         pass
 
-    def merge(self, session):
+    def sync(self, session):
 
         pass
 

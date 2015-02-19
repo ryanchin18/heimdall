@@ -19,20 +19,27 @@ class SingletonGraph(type):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
-        if "{0}_{1}".format(cls, args[0]) not in cls._instances:
+        try:
+            session = args[0]
+            pass
+        except IndexError:
+            session = "base"
+            pass
+
+        if "{0}_{1}".format(cls, session) not in cls._instances:
             print "not in instances"
             cls._instances[
-                "{0}_{1}".format(cls, args[0])
+                "{0}_{1}".format(cls, session)
             ] = super(SingletonGraph, cls).__call__(*args, **kwargs)
             pass
         else:
             print "in instances"
-            gcls = cls._instances["{0}_{1}".format(cls, args[0])]
-            if not gcls.is_same_session(args[0]):
+            gcls = cls._instances["{0}_{1}".format(cls, session)]
+            if not gcls.is_same_session(session):
                 print "new instances"
                 cls._instances[
-                    "{0}_{1}".format(cls, args[0])
+                    "{0}_{1}".format(cls, session)
                 ] = super(SingletonGraph, cls).__call__(*args, **kwargs)
                 pass
             pass
-        return cls._instances["{0}_{1}".format(cls, args[0])]
+        return cls._instances["{0}_{1}".format(cls, session)]
