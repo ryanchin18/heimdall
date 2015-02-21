@@ -14,10 +14,9 @@ import redis
 
 class ClientProtocol(protocol.Protocol):
     def __init__(self):
-        self.config = config
         self.redis = redis.StrictRedis(
-            self.config.redis.get('host', '127.0.0.1'),
-            self.config.redis.get('port', '6379')
+            config.redis.get('host', '127.0.0.1'),
+            config.redis.get('port', '6379')
         )
         pass
 
@@ -41,7 +40,7 @@ class ClientProtocol(protocol.Protocol):
         rq_ref_url = self.factory.server.referer
         rq_cilent_ip = str(self.factory.server.transport.getPeer().host)
 
-        # this request's response url will be the referrer of
+        # url of response for this request will be the referrer of
         # requests originated from rendered response
         url = urlparse(rq_uri)
         rq_uri_path = url.path if url.path == '/' else url.path.rstrip('/')
@@ -56,8 +55,7 @@ class ClientProtocol(protocol.Protocol):
             f_type = None
             pass
 
-        if f_type not in self.config.IGNORE_FILE_TYPES:
-
+        if f_type not in config.ignore_file_types:
             if rq_ref_url:
                 # client request has referer without "o_ref" injecting
                 # referer for this request
@@ -71,41 +69,53 @@ class ClientProtocol(protocol.Protocol):
                 # referrer for this request
                 rq_params = parse_qs(url.query)
                 rq_ref = rq_params['o_ref'][0] if 'o_ref' in rq_params else None
+                man_data = data  # take a copy of original data
 
-                if f_type not in self.config.DO_NOT_TAMPER_FILE_TYPES:
-                    # if the file type not in DO_NOT_TAMPER_FILE_TYPES,
-                    # manipulate the content and inject o_ref values
-                    man_data = re.sub(ur'(href|src)(=\"|=\'|=)(.*?)(\"|\'|>| |/>)', (
-                        lambda m:
-                        '{0}{1}{2}&o_ref={4}{3}'.format(
-                            m.group(1),
-                            m.group(2),
-                            m.group(3),
-                            m.group(4),
-                            res_ref
-                        )
-                        if '?' in m.group(3)
-                        else '{0}{1}{2}?o_ref={4}{3}'.format(
-                            m.group(1),
-                            m.group(2),
-                            m.group(3),
-                            m.group(4),
-                            res_ref
-                        )
-                    ), data)
-
-                    # fix content length according to new content
-                    cl_diff = len(man_data) - ori_len
-                    man_data = re.sub(ur'Content-Length(?::|: )(\d+)(?:\n|\r\n)', (
-                        lambda m:
-                        'Content-Length: {}\r\n'.format(
-                            str(int(m.group(1)) + cl_diff)
-                        )
-                    ), man_data)
-                    print "Content-Length Diff:{}".format(len(man_data) - ori_len)
-                    data = man_data
-                    man_data = None
+                if config.get('force_append_referrer', False):
+                    if f_type not in config.do_not_tamper_file_types:
+                        # if the file type not in DO_NOT_TAMPER_FILE_TYPES,
+                        # manipulate the content and inject o_ref values
+                        man_data = re.sub(r'(href|src)(=\"|=\'|=)(.*?)(\"|\'|>| |/>)', (
+                            lambda m:
+                            '{0}{1}{2}&o_ref={4}{3}'.format(
+                                m.group(1),
+                                m.group(2),
+                                m.group(3),
+                                m.group(4),
+                                res_ref
+                            )
+                            if '?' in m.group(3)
+                            else '{0}{1}{2}?o_ref={4}{3}'.format(
+                                m.group(1),
+                                m.group(2),
+                                m.group(3),
+                                m.group(4),
+                                res_ref
+                            )
+                        ), man_data)
+                        pass
                     pass
+
+                # adding meta referer to force browser to send referrer
+                # http://smerity.com/articles/2013/where_did_all_the_http_referrers_go.html
+                man_data = re.sub(
+                    r'<head>(.*?)</head>',
+                    r'<head>\r\n\1\r\n<meta name="referrer" content="always">\r\n</head>',
+                    man_data,
+                    flags=re.DOTALL
+                )
+
+                # fix content length according to new content
+                cl_diff = len(man_data) - ori_len
+                man_data = re.sub(r'Content-Length(?::|: )(\d+)(?:\n|\r\n)', (
+                    lambda m:
+                    'Content-Length: {}\r\n'.format(
+                        str(int(m.group(1)) + cl_diff)
+                    )
+                ), man_data)
+                print "Content-Length Diff:{}".format(len(man_data) - ori_len)
+                data = man_data
+                man_data = None
                 pass
 
             # ------------------------------------------------------------
@@ -116,7 +126,8 @@ class ClientProtocol(protocol.Protocol):
             r_date = response.getheader('Date')
             r_server = response.getheader('Server')
             r_x_powered_by = response.getheader('X-Powered-By')
-            r_res_content_length = int(response.getheader('Content-Length')) if response.getheader('Content-Length') else len(content)
+            r_res_content_length = int(response.getheader('Content-Length')) if response.getheader(
+                'Content-Length') else len(content)
             r_keep_alive = response.getheader('Keep-Alive')
             r_connection = response.getheader('Connection')
             r_content_type = response.getheader('Content-Type')

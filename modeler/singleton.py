@@ -1,3 +1,7 @@
+"""
+Refer to http://stackoverflow.com/a/6798042
+"""
+
 __author__ = 'grainier'
 
 
