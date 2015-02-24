@@ -5,14 +5,18 @@ import redis
 
 
 def process_message(m):
-    key = m['data']
-    session, type_val, hash_val = key.split('||')
-    session = session.split('::')[1]
-    type_val = type_val.split('::')[1]
-    hash_val = hash_val.split('::')[1]
-    channel = m['channel']
-    command = channel[channel.rindex(':')+1:]
-    print "command :", command, " | session :", session, " | type :", type_val, " | hash :", hash_val
+    try:
+        key = m['data']
+        session, type_val, hash_val = key.split('||')
+        session = session.split('::')[1]
+        type_val = type_val.split('::')[1]
+        hash_val = hash_val.split('::')[1]
+        channel = m['channel']
+        command = channel[channel.rindex(':')+1:]
+        print "command :", command, " | session :", session, " | type :", type_val, " | hash :", hash_val
+        pass
+    except ValueError, e:
+        print "invalid key detected"
     pass
 
 r = redis.StrictRedis(

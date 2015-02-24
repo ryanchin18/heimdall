@@ -1,13 +1,12 @@
 """
 
 """
-import httplib
 import re
 import hashlib
 from twisted.internet import protocol
 from urlparse import urlparse, parse_qs
 from interceptor import parse_response
-from modeler import SessionGraph, BaseGraph
+from modeler import SessionGraph, ApplicationGraph
 from util import config, current_time_milliseconds
 import cPickle as pickle
 import redis
@@ -130,7 +129,7 @@ class ClientProtocol(protocol.Protocol):
             "date": response.getheader('Date'),
             "server": response.getheader('Server'),
             "response_length": len(data),  # headers + content
-            "response_size": len(data) / 1024,  # in kb
+            "response_size": float(len(data)) / float(1024),  # in kb
             "keep_alive": response.getheader('Keep-Alive'),
             "connection": response.getheader('Connection'),
             "content_type": response.getheader('Content-Type'),
@@ -154,7 +153,7 @@ class ClientProtocol(protocol.Protocol):
 
         # TODO : This is just checking, have to write a better sync method
 
-        bg = BaseGraph()
+        bg = ApplicationGraph()
         bg.add_edge(
             {'vertex_id': rq_ref},
             {'vertex_id': res_ref}

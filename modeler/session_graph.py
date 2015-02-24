@@ -2,7 +2,7 @@ __author__ = 'grainier'
 
 import graph_tool.all as gt
 from modeler import SingletonGraph
-from util import config
+from util import config, current_time_milliseconds
 import redis
 
 
@@ -18,12 +18,15 @@ class SessionGraph(object):
         )
         try:
             self.graph = gt.load_graph("{0}_c_g.xml.gz".format(self.session))
+            self.session_start = self.graph.graph_properties["session_start"]
             pass
         except Exception:
             self.graph = gt.Graph()
+            self.session_start = current_time_milliseconds()
             # add graph properties
             self.graph.graph_properties["session"] = self.graph.new_graph_property("string", self.session)
-            
+            self.graph.graph_properties["session_start"] = self.graph.new_graph_property("long", self.session_start)
+
             # add edge properties
             # self.graph.edge_properties["referer"] = self.graph.new_edge_property("string")  # this is shouldn't be an edge property
             
