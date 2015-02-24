@@ -5,6 +5,7 @@ from config import Config
 import logging
 import logging.config
 import os
+import time
 
 conf_dir = os.path.join(os.path.dirname(__file__), '../conf')
 
@@ -19,4 +20,6 @@ loggers = {
     'server': logging.getLogger('server'),
     # other loggers goes here
 }
+
+current_time_milliseconds = lambda: int(round(time.time() * 1000))
 

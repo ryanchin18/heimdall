@@ -78,17 +78,17 @@ class SessionGraph(object):
         self.graph.vertex_properties["original_index"][v] = v_index
 
         #  TODO : This is bad, DO it right
-        self.graph.vertex_properties["url"][v] = self.redis.get('session:any.url.{0}'.format(vertex_id))
+        self.graph.vertex_properties["url"][v] = self.redis.get('session::any||type::url||hash::{0}'.format(vertex_id))
         # TODO : add other properties here, if there's any
 
         # add index to redis
-        self.redis.set('session:{0}.vertex.{1}'.format(self.session, vertex_id), v_index)
+        self.redis.set('session::{0}||type::vertex||hash::{1}'.format(self.session, vertex_id), v_index)
         return v
         pass
 
     def get_vertex(self, vertex_id):
         try:
-            v_index = self.redis.get('session:{0}.vertex.{1}'.format(self.session, vertex_id))
+            v_index = self.redis.get('session::{0}||type::vertex||hash::{1}'.format(self.session, vertex_id))
             v = self.graph.vertex(v_index)
             v = v if v.is_valid() else None
         except TypeError as e:

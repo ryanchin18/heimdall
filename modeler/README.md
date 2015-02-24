@@ -16,10 +16,13 @@ WAYS TO HAVE REFERER
 redis key patterns
 
 storing vertex index
-session:{ip}.vertex.{hash}
+session::{ip}||type::vertex||hash::{hash}
 
 storing real url for hash (for any session url hash will be the same)
-session:any.url.{hash}
+session::any||type::url||hash::{hash}
 
 storing session key for expiration
-session:{ip}
+session::{ip}||type::session||hash::{some_hash}
+
+storing http transport
+session::{ip}||type::transport||hash::{hash}
