@@ -3,7 +3,7 @@ The parent class for all features used to distinguished an attack from a legitim
 """
 
 
-class Learn2BanFeature(object):
+class BaseFactor(object):
     """
     We need to get the data for IPSieve class and analyze it. IPSieve
     provide the Feature with a dictionary and the feature needs to return

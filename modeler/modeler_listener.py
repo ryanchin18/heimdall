@@ -24,20 +24,17 @@ class ModelerListener(RedisListener):
         command = command.lower()
         # only need to care about set, del, expired commands
         if type_val == 'transport' and command == 'set':
-            t = TrafficRecord(key)
-            print t
+            # TODO : Update Sessions Graph
+            # TODO : Do NOT delete Traffic Record, It should be deleted from AnalyserListener
             pass
 
-        elif type_val == 'transport' and command == 'del':
-
-            pass
-
-        elif type_val == 'transport' and command == 'expired':
-
+        elif type_val == 'session' and command == 'expired':
+            # TODO : Sync Sessions Graph with Application Graph
+            # TODO : Delete everything related to that particular session
             pass
 
         else:
-            # default option
+            # default option (do nothing)
             pass
         pass
 
