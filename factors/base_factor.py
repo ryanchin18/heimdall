@@ -1,52 +1,49 @@
 """
-The parent class for all features used to distinguished an attack from a legitimate request
+The base class for all factors that used to identify an attack from a legitimate HTTP Traffic
 """
 
 
 class BaseFactor(object):
     """
-    We need to get the data for IPSieve class and analyze it. IPSieve
-    provide the Feature with a dictionary and the feature needs to return
-    a dictionary of IPs and numerical value
-
-    (This is new-style particularly to loop through its children using
-    __subclass__)
+    Need to collect various factors from HTTP headers to be modeled and
+    analysed using graphs. In order to make the process easier values of
+    the factors should be represented in numerical values.
     """
-    MAX_IDEAL_SESSION_LENGTH = 1800 #seconds
-    def __init__(self, ip_sieve, ip_feature_db):
-        """
-        Set the corresponding ip_sieve
 
-        INPUT::
-           ip_sieve: the IPSieve object to crunch the ATS log file
-           ip_feature_db: the global db that store all features of
-                          all ips
-        """
-        self._ip_sieve = ip_sieve
-        self._ip_feature_db = ip_feature_db
-
-        self._FEATURE_INDEX = -1 #This is an abstract class so no real feature
+    def __init__(self, session, session_graph, traffic_record):
+        self._session = session
+        self._session_graph = session_graph
+        self._traffic_record = traffic_record
+        self._FACTOR_INDEX = -1  # since this is an abstract class this is not a actual feature
+        pass
 
     def compute(self):
         """
-        The feature should overload this function to implement the feautere
-        computation. At the end the results should be stored
-        in a dictionary with the format of IP:value where the value is a double
-        or an integer value
+        Subclasses inherits from this class should override this method to
+        perform the factor computation. And the value of the computed factor
+        should be appended to the graph using either append_graph_factor() or
+        append_vertex_factor() or append_edge_factor()
         """
         pass
 
-    def append_feature(self, inspected_ip, feature_value):
-        """
-        Just checks if the ip is in the database adds the feature to it
-        otherwise make a new record for the ip in the ip dictioanry
+    def append_graph_factor(self, inspected_ip, feature_value):
+        # update graph property
+        pass
 
-        INPUT::
-             ispected_ip: the ip whose record we want to manipulate
-             feature_value: the value that we want to add as
-             {_FEATURE_INDEX: feature_value} to the record
+    def append_vertex_factor(self, inspected_ip, feature_value):
+        # get the vertex
+
+        # update vertex
+        pass
+
+    def append_edge_factor(self, inspected_ip, feature_value):
+        # get the vertex
+
+        # update vertex
+        pass
+
+    def append_session_factor(self, inspected_ip, feature_value):
         """
-        if inspected_ip in self._ip_feature_db:
-            self._ip_feature_db[inspected_ip][self._FEATURE_INDEX] = feature_value
-        else:
-            self._ip_feature_db[inspected_ip] = {self._FEATURE_INDEX:feature_value}
+        This is to be used if there's going to be SVM integration to analyse
+        """
+        pass
