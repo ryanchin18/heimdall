@@ -17,7 +17,7 @@ class SessionGraph(object):
             config.redis.get('port', '6379')
         )
         try:
-            self.graph = gt.load_graph("{0}_c_g.xml.gz".format(self.session))
+            self.graph = gt.load_graph("{0}_c_g.gt".format(self.session))
             self.session_start = self.graph.graph_properties["session_start"]
             pass
         except Exception:
@@ -46,7 +46,7 @@ class SessionGraph(object):
         pass
 
     def save(self):
-        self.graph.save("{0}_c_g.xml.gz".format(self.session))
+        self.graph.save("{0}_c_g.gt".format(self.session))
         pass
 
     def add_edge(self, source_vertex, target_vertex, edge_properties=None):
