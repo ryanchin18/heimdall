@@ -89,6 +89,78 @@ class SessionGraph(object):
         return v
         pass
 
+    def add_graph_property(self, property_key, property_type, property_value):
+        """
+        This method will add a graph property to this session graph and save it.
+        :param property_key: property key to identify property
+        :param property_type: property type (int, double, ...)
+        :param property_value: value of the property
+        :return: -
+        """
+        try:
+            self.graph.graph_properties[property_key] = property_value
+            pass
+        except KeyError, e:
+            prop = self.graph.new_graph_property(property_type)
+            self.graph.graph_properties[property_key] = prop
+            self.graph.graph_properties[property_key] = property_value
+            pass
+        self.save()
+        pass
+
+    def add_vertex_property(self, property_key, property_type, property_value, vertex=None, vertex_id=None):
+        # get the vertex
+        if vertex:
+            v = vertex
+        elif vertex_id:
+            v = self.get_vertex(vertex_id)
+        else:
+            v = None
+
+        # check the validity
+        v = v if v is not None and v.is_valid() else None
+
+        # add vertex property
+        self.graph.vertex_properties[property_key] = self.graph.new_vertex_property(property_type)
+        self.graph.vertex_properties[property_key][v] = property_value
+        pass
+
+    def add_edge_property(
+            self, property_key, property_type, property_value,
+            edge=None, source_vertex=None, destination_vertex=None,
+            source_vertex_id=None, destination_vertex_id=None):
+
+        # get the edge
+        try:
+            if edge:
+                e = edge
+                pass
+            elif source_vertex and destination_vertex:
+                e = self.graph.edge(int(source_vertex), int(destination_vertex))
+                pass
+            elif source_vertex_id and destination_vertex_id:
+                sv = self.get_vertex(source_vertex_id)
+                dv = self.get_vertex(destination_vertex_id)
+                if sv and dv:
+                    e = self.graph.edge(int(sv), int(dv))
+                    pass
+                else:
+                    e = None
+                    pass
+                pass
+            else:
+                e = None
+        except ValueError, e:
+            e = None
+            pass
+
+        # add edge property
+        if e:
+            self.graph.edge_properties[property_key] = self.graph.new_edge_property(property_type)
+            self.graph.edge_properties[property_key][e] = property_value
+            pass
+        pass
+
     def get_vertex(self, vertex_id):
         try:
             v_index = self.redis.get('session::{0}||type::vertex||hash::{1}'.format(self.session, vertex_id))

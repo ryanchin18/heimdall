@@ -14,7 +14,8 @@ class BaseFactor(object):
         self._session = session
         self._session_graph = session_graph
         self._traffic_record = traffic_record
-        self._FACTOR_INDEX = -1  # since this is an abstract class this is not a actual feature
+        self._FACTOR_INDEX = -1  # since this is an abstract class this is not a actual index
+        self._FACTOR_KEY = "Factor"  # since this is an abstract class this is not a actual key
         pass
 
     def compute(self):
@@ -26,23 +27,50 @@ class BaseFactor(object):
         """
         pass
 
-    def append_graph_factor(self, inspected_ip, feature_value):
-        # update graph property
+    def append_graph_factor(self, value_type, feature_value):
+        self._session_graph.add_graph_property(self._FACTOR_KEY, value_type, feature_value)
         pass
 
-    def append_vertex_factor(self, inspected_ip, feature_value):
-        # get the vertex
+    def append_vertex_factor(self, value_type, feature_value, vertex=None, vertex_id=None):
+        if vertex:
+            self._session_graph.add_vertex_property(
+                self._FACTOR_KEY, value_type, feature_value, vertex=vertex
+            )
+        elif vertex_id:
+            self._session_graph.add_vertex_property(
+                self._FACTOR_KEY, value_type, feature_value, vertex_id=vertex_id
+            )
+        pass
 
+    def append_edge_factor(
+            self, value_type, feature_value, edge=None,
+            source_vertex=None, destination_vertex=None,
+            source_vertex_id=None, destination_vertex_id=None):
         # update vertex
+        if edge:
+            self._session_graph.add_edge_property(
+                self._FACTOR_KEY, value_type, feature_value, edge=edge
+            )
+            pass
+        elif source_vertex and destination_vertex:
+            self._session_graph.add_edge_property(
+                self._FACTOR_KEY, value_type, feature_value,
+                source_vertex=source_vertex, destination_vertex=destination_vertex
+            )
+            pass
+        elif source_vertex_id and destination_vertex_id:
+            self._session_graph.add_edge_property(
+                self._FACTOR_KEY, value_type, feature_value,
+                source_vertex_id=source_vertex_id, destination_vertex_id=destination_vertex_id
+            )
+            pass
+        else:
+            # TODO Throw an exception
+            print "insufficient parameters"
+            pass
         pass
 
-    def append_edge_factor(self, inspected_ip, feature_value):
-        # get the vertex
-
-        # update vertex
-        pass
-
-    def append_session_factor(self, inspected_ip, feature_value):
+    def append_session_factor(self, value_type, feature_value):
         """
         This is to be used if there's going to be SVM integration to analyse
         """

@@ -9,6 +9,7 @@ class FactorResponsePayloadSizeAverage(BaseFactor):
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
         self._FACTOR_INDEX = 1
+        self._FACTOR_KEY = "FactorResponsePayloadSizeAverage"
         pass
 
     def compute(self):

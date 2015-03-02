@@ -12,14 +12,14 @@ class FactorAverageResponseTime(BaseFactor):
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
         self._FACTOR_INDEX = 2
+        self._FACTOR_KEY = "FactorAverageResponseTime"
         pass
 
     def compute(self):
         """
         Compute the average response time for each session
-        variables needed: Time Taken for Each Response (in an array)
-        avg_res_time = Time taken for N responses / N
-        updating avg_res_time = ( avg_res_time * N + Time Taken For New Response) /  (N + 1)
+        variables needed: Current Average Response Time, Number of responses, Time Taken For New Response
+        avg_res_time = ( avg_res_time * N + Time Taken For New Response) /  (N + 1)
         :return:
         """
         pass
