@@ -60,3 +60,20 @@ class ScrapyDeprecationWarning(Warning):
 class ContractFail(AssertionError):
     """Error raised in case of a failing contract"""
     pass
+
+
+# Graph
+
+class VertexDoesNotExists(Exception):
+    """To indicate user specified an invalid (non-existing) vertex"""
+    pass
+
+
+class EdgeDoesNotExists(Exception):
+    """To indicate user specified an invalid (non-existing) edge"""
+    pass
+
+
+class PropertyDoesNotExists(Exception):
+    """To indicate user specified an invalid (non-existing) edge"""
+    pass

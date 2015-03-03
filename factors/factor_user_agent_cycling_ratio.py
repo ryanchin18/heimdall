@@ -1,3 +1,4 @@
+import operator
 from factors import BaseFactor
 
 
@@ -16,7 +17,7 @@ class FactorUserAgentCyclingRatio(BaseFactor):
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
-        self._FACTOR_INDEX = 2
+        self._FACTOR_INDEX = 10
         self._FACTOR_KEY = "FactorUserAgentCyclingRatio"
         pass
 
@@ -49,7 +50,14 @@ class FactorUserAgentCyclingRatio(BaseFactor):
         If the value of User-Agent Cycling Ratio is greater than 0, that implies
         there's been a User-Agents cycling within that session
         """
-        # ua_usage = sorted(ua_request_map.iteritems(), key=operator.itemgetter(1), reverse=True)
-        # ua_cycle_ratio = float(total_requests - sorted_ua_request_map[0][1]) / total_requests
+        total_requests = self._session_graph.get_graph_property('traffic_records')
+        sorted_ua_usage = sorted(
+            self._session_graph.get_graph_property('user_agents').iteritems(),
+            key=operator.itemgetter(1),
+            reverse=True
+        )
+        ua_cycle_ratio = float(total_requests - sorted_ua_usage[0][1]) / float(total_requests)
+        self.append_graph_factor('float', ua_cycle_ratio)
+        print "User-Agent Cycling Ratio : ", ua_cycle_ratio
         pass
     pass

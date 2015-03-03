@@ -3,6 +3,7 @@ __author__ = 'grainier'
 import graph_tool.all as gt
 from modeler import SingletonGraph
 from util import config, current_time_milliseconds
+from exception import VertexDoesNotExists, PropertyDoesNotExists, EdgeDoesNotExists
 import redis
 
 
@@ -33,7 +34,7 @@ class SessionGraph(object):
 
             # add edge properties
             # self.graph.edge_properties["referer"] = self.graph.new_edge_property("string")  # this is shouldn't be an edge property
-            
+
             # add vertex properties
             self.graph.vertex_properties["vertex_id"] = self.graph.new_vertex_property("string")  # do not remove this
             self.graph.vertex_properties["original_index"] = self.graph.new_vertex_property("int")  # do not remove this
@@ -80,7 +81,7 @@ class SessionGraph(object):
         self.graph.vertex_properties["vertex_id"][v] = vertex_id
         self.graph.vertex_properties["original_index"][v] = v_index
 
-        #  TODO : This is bad, DO it right
+        # TODO : This is bad, DO it right
         self.graph.vertex_properties["url"][v] = self.redis.get('session::any||type::url||hash::{0}'.format(vertex_id))
         # TODO : add other properties here, if there's any
 
@@ -130,29 +131,34 @@ class SessionGraph(object):
         v = v if v is not None and v.is_valid() else None
 
         # add vertex property
-        if v is not None:
+        if v:
             self.graph.vertex_properties[property_key] = self.graph.new_vertex_property(property_type)
             self.graph.vertex_properties[property_key][v] = property_value
+            self.save()
         else:
-
-            pass
+            raise VertexDoesNotExists()
         pass
 
     def get_vertex_property(self, property_key, vertex=None, vertex_id=None):
         # get the vertex
+        v = None
         if vertex:
             v = vertex
         elif vertex_id:
             v = self.get_vertex(vertex_id)
-        else:
-            v = None
 
         # check the validity
         v = v if v is not None and v.is_valid() else None
 
-        # add vertex property
-        self.graph.vertex_properties[property_key] = self.graph.new_vertex_property(property_type)
-        self.graph.vertex_properties[property_key][v] = property_value
+        # return vertex property
+        if v:
+            try:
+                return self.graph.vertex_properties[property_key][v]
+            except KeyError, e:
+                raise PropertyDoesNotExists()
+            pass
+        else:
+            raise VertexDoesNotExists()
         pass
 
     def add_edge_property(
@@ -188,7 +194,16 @@ class SessionGraph(object):
         if e:
             self.graph.edge_properties[property_key] = self.graph.new_edge_property(property_type)
             self.graph.edge_properties[property_key][e] = property_value
+            self.save()
             pass
+        else:
+            raise EdgeDoesNotExists()
+        pass
+
+    def get_edge_property(
+            self, property_key, edge=None, source_vertex=None, destination_vertex=None,
+            source_vertex_id=None, destination_vertex_id=None):
+        # TODO : Implement this
         pass
 
     def get_vertex(self, vertex_id):
@@ -200,6 +215,28 @@ class SessionGraph(object):
             v = None
             pass
         return v
+        pass
+
+    def increment_records_count(self):
+        self.graph.graph_properties["traffic_records"] += 1
+        pass
+
+    def update_response_code_usage(self, response_code):
+        rcu = self.graph.graph_properties["response_codes"]
+        if response_code in rcu:
+            rcu[response_code] += 1
+        else:
+            rcu[response_code] = 1
+        self.graph.graph_properties["response_codes"] = rcu
+        pass
+
+    def update_user_agent_usage(self, user_agent):
+        uau = self.graph.graph_properties["user_agents"]
+        if user_agent in uau:
+            uau[user_agent] += 1
+        else:
+            uau[user_agent] = 1
+        self.graph.graph_properties["user_agents"] = uau
         pass
 
     def re_index(self):

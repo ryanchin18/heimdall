@@ -11,7 +11,7 @@ class FactorHTTPClientErrorResponseRate(BaseFactor):
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
-        self._FACTOR_INDEX = 1
+        self._FACTOR_INDEX = 4
         self._FACTOR_KEY = "FactorHTTPClientErrorResponseRate"
         pass
 
@@ -26,6 +26,16 @@ class FactorHTTPClientErrorResponseRate(BaseFactor):
         Calculation:
             HTTP Client Error Response Rate = E / N
         """
-        # error_res_rate = 0 if total_error_statuses <= 0 else float(total_error_statuses) / float(total_requests)
+        total_requests = self._session_graph.get_graph_property('traffic_records')
+        rcu = self._session_graph.get_graph_property('response_codes')
+        total_errors = 0
+        for code in rcu.keys():
+            if 400 <= code < 500:
+                total_errors += rcu[code]
+                pass
+            pass
+        error_rate = 0 if total_errors <= 0 else float(total_errors) / float(total_requests)
+        self.append_graph_factor('float', error_rate)
+        print "HTTP Client Error Response Rate : ", error_rate
         pass
     pass

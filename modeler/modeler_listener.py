@@ -37,21 +37,9 @@ class ModelerListener(RedisListener):
             traffic_record = TrafficRecord(key)
 
             # update graph variables
-            #   request / response count should be equal, therefore take traffic_record count
-
-            #   user agents usage
-
-            #   session length
-            session_start = session_graph.session_start
-            now = current_time_milliseconds()
-            session_length_milliseconds = now - session_start
-            session_length_seconds = float(session_length_milliseconds) / 1000.
-            self.append_graph_factor('double', session_length_seconds)
-
-            #   response codes returned
-
-
-
+            session_graph.increment_records_count()
+            session_graph.update_user_agent_usage(traffic_record['user_agent'])
+            session_graph.update_response_code_usage(traffic_record['response_code'])
 
             # compute and store factors on session graph
             for Factor in BaseFactor.__subclasses__():
