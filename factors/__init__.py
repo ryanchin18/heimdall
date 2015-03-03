@@ -2,7 +2,7 @@ __author__ = 'grainier'
 # __all__ = []
 
 from base_factor import BaseFactor
-from factor_average_request_frequency import FactorAverageRequestFrequency
+from factor_average_request_interval import FactorAverageRequestInterval
 from factor_average_response_time import FactorAverageResponseTime
 from factor_browsing_depth import FactorBrowsingDepth
 from factor_http_client_error_response_rate import FactorHTTPClientErrorResponseRate

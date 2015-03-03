@@ -3,12 +3,16 @@ from factors import BaseFactor
 
 class FactorUserAgentCyclingRatio(BaseFactor):
     """
-    A common attack for DDOS Botnets is to change user agent repeatedly
-    during an attack. This strategy can be quite effective against even
-    the most generalised regex rules. If the IP never repeats its user 
-    agent then rules put in place to block requesters using obscure user
-    agents will still be subverted. In the context of a real human user,
-    or even a spider bot, user agent rotation is highly aberrant.
+    Modern DDOS Botnets are tend to change user agent repeatedly during an attack.
+    This strategy can be quite effective against even the most generalised regex rules. If
+    the IP never repeats its user agent then rules put in place to block requesters using
+    obscure user agents will still be subverted. In the context of a real human user, or even
+    a spider bot, user agent rotation is highly aberrant. Therefore this factor can be used
+    to identify user agent rotating behaviour of different attack types. This factor represent
+    the computed average change rate of User-Agents per Session. This will be calculated
+    by taking the ratio between sum of minority usage of unique User-Agents and Total
+    number of requests. If the value of User-Agent Cycling Ratio is greater than 0, that
+    implies there's been a User-Agents cycling within that session.
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
@@ -18,16 +22,15 @@ class FactorUserAgentCyclingRatio(BaseFactor):
 
     def compute(self):
         """
-        Compute the average change rate of User-Agents per Session. This will
-        be calculated by taking the ratio between sum of minority usage of 
-        unique User-Agents and Total number of requests.
+        Compute User-Agent Cycling Ratio.
         
-        variables needed: 
+        Variables Required:
             * Total Requests Count, 
             * Unique User-Agents per session and their usages as a Dictionary
               sorted by Usage in descending order
-              
-        assume sorted User-Agents usage dictionary as this
+
+        Calculation:
+        Assume sorted User-Agents usage dictionary as this
         {
              "User-Agent-A" : 7,
              "User-Agent-B" : 2,
@@ -35,7 +38,7 @@ class FactorUserAgentCyclingRatio(BaseFactor):
              "User-Agent-D" : 1,
         }
         
-        according to that;
+        According to that;
              Total requests = Sigma (User-Agent Usage)
              Total requests = 11
              Minority User-Agent Usage = Total requests - Majority User-Agent Usage
@@ -45,11 +48,8 @@ class FactorUserAgentCyclingRatio(BaseFactor):
              
         If the value of User-Agent Cycling Ratio is greater than 0, that implies
         there's been a User-Agents cycling within that session
-
-        CODE :
-        ua_usage = sorted(ua_request_map.iteritems(), key=operator.itemgetter(1), reverse=True)
-        ua_cycle_ratio = float(total_requests - sorted_ua_request_map[0][1]) / total_requests
-        :return:
         """
+        # ua_usage = sorted(ua_request_map.iteritems(), key=operator.itemgetter(1), reverse=True)
+        # ua_cycle_ratio = float(total_requests - sorted_ua_request_map[0][1]) / total_requests
         pass
     pass

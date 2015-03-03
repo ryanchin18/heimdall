@@ -3,8 +3,8 @@ from factors import BaseFactor
 
 class FactorResponsePayloadSizeAverage(BaseFactor):
     """
-    This feature looks at the size of the content that a requester
-    is retrieving.
+    This factor represents the average size of the content (payload) that the web server
+    sends with the response.
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
@@ -14,14 +14,15 @@ class FactorResponsePayloadSizeAverage(BaseFactor):
 
     def compute(self):
         """
-        variables needed:
-        * Previously Calculated Response Payload Size Average,
-        * Total Response Count,
-        * Size of New Response
+        Compute the Response Payload Size Average
 
-        avg_res_size = Size for N responses / N
-        updating avg_res_size = ( avg_res_size * N + Size of New Response) / ( N + 1 )
-        :return:
+        Variables Required:
+            * Previously Calculated Response Payload Size Average (A)
+            * Total Responses Count (N)
+            * Size of New Response (S)
+
+        Calculation:
+            Response Payload Size Average = ( A * N + S) / N + 1
         """
         pass
     pass

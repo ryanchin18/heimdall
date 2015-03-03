@@ -3,8 +3,8 @@ from factors import BaseFactor
 
 class FactorRequestPayloadSizeAverage(BaseFactor):
     """
-    This feature looks at the size of the content that a requester
-    sends with a request.
+    This factor represents the average size of the content (payload) that a requester sends
+    with a request.
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
@@ -14,14 +14,15 @@ class FactorRequestPayloadSizeAverage(BaseFactor):
 
     def compute(self):
         """
-        variables needed:
-            * Previously Calculated Request Payload Size Average,
-            * Total Requests Count,
-            * Size of New Request
+        Compute the Request Payload Size Average
 
-        avg_req_size = Size for N requests / N
-        updating avg_req_size = ( avg_req_size * N + Size of New Request) / ( N + 1 )
-        :return:
+        Variables Required:
+            * Previously Calculated Request Payload Size Average (A)
+            * Total Requests Count (N)
+            * Size of New Request (S)
+
+        Calculation:
+            Request Payload Size Average = ( A * N + S) / N + 1
         """
         pass
     pass
