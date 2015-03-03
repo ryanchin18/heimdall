@@ -42,7 +42,7 @@ class ModelerListener(RedisListener):
             #   user agents usage
 
             #   session length
-            session_start = self._session_graph.session_start
+            session_start = session_graph.session_start
             now = current_time_milliseconds()
             session_length_milliseconds = now - session_start
             session_length_seconds = float(session_length_milliseconds) / 1000.

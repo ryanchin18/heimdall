@@ -23,9 +23,13 @@ class SessionGraph(object):
         except Exception:
             self.graph = gt.Graph()
             self.session_start = current_time_milliseconds()
-            # add graph properties
+
+            # add mandatory graph properties
             self.graph.graph_properties["session"] = self.graph.new_graph_property("string", self.session)
             self.graph.graph_properties["session_start"] = self.graph.new_graph_property("long", self.session_start)
+            self.graph.graph_properties["traffic_records"] = self.graph.new_graph_property("int", 0)
+            self.graph.graph_properties["user_agents"] = self.graph.new_graph_property("object", {})
+            self.graph.graph_properties["response_codes"] = self.graph.new_graph_property("object", {})
 
             # add edge properties
             # self.graph.edge_properties["referer"] = self.graph.new_edge_property("string")  # this is shouldn't be an edge property
@@ -34,10 +38,6 @@ class SessionGraph(object):
             self.graph.vertex_properties["vertex_id"] = self.graph.new_vertex_property("string")  # do not remove this
             self.graph.vertex_properties["original_index"] = self.graph.new_vertex_property("int")  # do not remove this
             self.graph.vertex_properties["url"] = self.graph.new_vertex_property("string")  # do not remove this
-
-            # self.graph.vertex_properties["data_length"] = self.graph.new_vertex_property("int")
-            # self.graph.vertex_properties["content_length"] = self.graph.new_vertex_property("int")
-            # self.graph.vertex_properties["content_size"] = self.graph.new_vertex_property("double")  # in kb
             pass
         pass
 
@@ -108,7 +108,37 @@ class SessionGraph(object):
         self.save()
         pass
 
+    def get_graph_property(self, property_key):
+        try:
+            return self.graph.graph_properties[property_key]
+            pass
+        except KeyError, e:
+            return None
+            pass
+        pass
+
     def add_vertex_property(self, property_key, property_type, property_value, vertex=None, vertex_id=None):
+        # get the vertex
+        if vertex:
+            v = vertex
+        elif vertex_id:
+            v = self.get_vertex(vertex_id)
+        else:
+            v = None
+
+        # check the validity
+        v = v if v is not None and v.is_valid() else None
+
+        # add vertex property
+        if v is not None:
+            self.graph.vertex_properties[property_key] = self.graph.new_vertex_property(property_type)
+            self.graph.vertex_properties[property_key][v] = property_value
+        else:
+
+            pass
+        pass
+
+    def get_vertex_property(self, property_key, vertex=None, vertex_id=None):
         # get the vertex
         if vertex:
             v = vertex
