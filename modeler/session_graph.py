@@ -31,6 +31,7 @@ class SessionGraph(object):
             self.graph.graph_properties["traffic_records"] = self.graph.new_graph_property("int", 0)
             self.graph.graph_properties["user_agents"] = self.graph.new_graph_property("object", {})
             self.graph.graph_properties["response_codes"] = self.graph.new_graph_property("object", {})
+            self.graph.graph_properties["resource_types"] = self.graph.new_graph_property("object", {})
 
             # add edge properties
             # self.graph.edge_properties["referer"] = self.graph.new_edge_property("string")  # this is shouldn't be an edge property
@@ -237,6 +238,15 @@ class SessionGraph(object):
         else:
             uau[user_agent] = 1
         self.graph.graph_properties["user_agents"] = uau
+        pass
+
+    def update_resource_type_usage(self, resource_type):
+        rtu = self.graph.graph_properties["resource_types"]
+        if resource_type in rtu:
+            rtu[resource_type] += 1
+        else:
+            rtu[resource_type] = 1
+        self.graph.graph_properties["resource_types"] = rtu
         pass
 
     def re_index(self):

@@ -49,7 +49,7 @@ class ClientProtocol(protocol.Protocol):
             f_type = rq_uri_path[rq_uri_path.rindex('.'):]
             pass
         except ValueError:
-            f_type = None
+            f_type = 'unknown'
             pass
 
         if rq_ref_url:
