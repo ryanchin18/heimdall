@@ -249,6 +249,14 @@ class SessionGraph(object):
         self.graph.graph_properties["resource_types"] = rtu
         pass
 
+    def get_session_length(self):
+        """
+        Get the session length in milliseconds
+        :return: session length in milliseconds
+        """
+        return current_time_milliseconds() - self.session_start
+        pass
+
     def re_index(self):
         # re-index redis
         # {vertex_id : vertex_index}

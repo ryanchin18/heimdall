@@ -20,11 +20,24 @@ class FactorAverageResponseTime(BaseFactor):
 
         Variables Required:
             * Current Average Response Time (A)
-            * Number of Responses (N)
+            * Number of Responses (N) (Including new Response)
             * Time Taken For New Response (T)
 
         Calculation:
-            * Average Response Time = ( A * N + T) / (N + 1)
+            * Average Response Time = ((A * (N - 1)) + T) / N
         """
+        current_average = self._session_graph.get_graph_property(self._FACTOR_KEY)
+        current_average = current_average if current_average else 0.
+
+        # total number of responses ( or requests ) are equal to number of traffic records received
+        total_responses = self._session_graph.get_graph_property('traffic_records')
+
+        response_time_milliseconds = self._traffic_record['response_time']
+        response_time_seconds = float(response_time_milliseconds) / 1000.
+
+        average_response_time = ((current_average * float(total_responses - 1)) + response_time_seconds) / float(total_responses)
+        self.append_graph_factor('float', average_response_time)
+
+        print "Average Response Time : ", average_response_time
         pass
     pass

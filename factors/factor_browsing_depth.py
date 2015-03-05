@@ -15,13 +15,13 @@ class FactorBrowsingDepth(BaseFactor):
 
     def compute(self):
         """
-        Get the Variance Request Interval
+        Get the Browsing Depth
 
         Variables Required:
             * Max Span of Graph
 
         Calculation:
-            Variance Request Interval = Max Span of Graph
+            Browsing Depth = Max Span of Graph
         """
         pass
     pass
