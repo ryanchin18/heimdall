@@ -1,7 +1,7 @@
 """
 
 """
-from util import config
+from common import config
 import redis
 
 

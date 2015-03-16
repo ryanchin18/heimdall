@@ -1,7 +1,7 @@
 """
 
 """
-from util import config
+from common import config
 import cPickle as pickle
 import redis
 
@@ -13,9 +13,9 @@ class TrafficRecord(dict):
             config.redis.get('host', '127.0.0.1'),
             config.redis.get('port', '6379')
         )
-        traffic_str = self.redis.get(key)
-        if traffic_str:
-            dictionary = pickle.loads(traffic_str)
+        record = self.redis.get(key)
+        if record:
+            dictionary = pickle.loads(record)
         else:
             dictionary = {}
         super(TrafficRecord, self).__init__(**dictionary)

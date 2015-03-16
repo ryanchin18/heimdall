@@ -56,3 +56,6 @@ session::{ip}||type::session||hash::{some_hash}
 
 storing http transport
 session::{ip}||type::transport||hash::{hash}
+
+storing severity record
+session::{ip}||type::severity||hash::{hash}

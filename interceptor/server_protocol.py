@@ -3,7 +3,7 @@
 """
 from twisted.internet import protocol, reactor
 from interceptor import ClientProtocol, HTTPRequest
-from util import config, current_time_milliseconds
+from common import config, current_time_milliseconds
 
 
 class ServerProtocol(protocol.Protocol):
@@ -23,6 +23,8 @@ class ServerProtocol(protocol.Protocol):
             self.config.destination.get('port', 80),
             factory
         )
+
+        # TODO : I THINK CLIENT ERROR, BAN HANDLING, CAPTCHA REDIR SHOULD HAPPEN HERE
         pass
 
     # Client => Proxy

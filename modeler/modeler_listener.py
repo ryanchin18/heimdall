@@ -2,7 +2,7 @@
 
 """
 from modeler import SessionGraph
-from util import current_time_milliseconds
+from common import current_time_milliseconds
 from listener import RedisListener
 from modeler import TrafficRecord
 from factors import *
@@ -27,9 +27,6 @@ class ModelerListener(RedisListener):
         command = command.lower()
         # only need to care about set, del, expired commands
         if type_val == 'transport' and command == 'set':
-            # TODO : Update Sessions Graph
-            # TODO : Do NOT delete Traffic Record, It should be deleted from AnalyserListener
-
             # get the session graph
             session_graph = SessionGraph(session)
 
@@ -47,6 +44,7 @@ class ModelerListener(RedisListener):
                 factor = Factor(session, session_graph, traffic_record)
                 factor.compute()
                 pass
+            self.notify_analyser(session, hash_val)
             pass
 
         elif type_val == 'session' and command == 'expired':
@@ -57,5 +55,9 @@ class ModelerListener(RedisListener):
         else:
             # default option (do nothing)
             pass
+        pass
+
+    def notify_analyser(self, session, hash_val):
+        self.set('session::{0}||type::{1}||hash::{2}'.format(session, "analyse", hash_val), "analyser_event")
         pass
     pass

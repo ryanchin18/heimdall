@@ -7,7 +7,7 @@ from twisted.python import log
 from interceptor import ServerProtocol
 from modeler import ModelerListener
 from analyser import AnalyserListener
-from util import config
+from common import config
 import sys
 
 
