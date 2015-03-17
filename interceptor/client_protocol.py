@@ -7,7 +7,7 @@ from twisted.internet import protocol
 from urlparse import urlparse, parse_qs
 from interceptor import parse_response
 from modeler import SessionGraph, ApplicationGraph
-from common import config, current_time_milliseconds
+from common import config, current_time_milliseconds, redis_key_template
 import cPickle as pickle
 import redis
 
@@ -42,7 +42,7 @@ class ClientProtocol(protocol.Protocol):
         url = urlparse(rq_uri)
         rq_uri_path = url.path if url.path == '/' else url.path.rstrip('/')
         res_ref = hashlib.md5(rq_uri_path).hexdigest()
-        self.redis.set('session::any||type::url||hash::{0}'.format(res_ref), rq_uri_path)
+        self.redis.set(redis_key_template.format("any", "url", res_ref), rq_uri_path)
 
         # get the file type (file extinction) of response that's going to generate
         try:
@@ -58,7 +58,7 @@ class ClientProtocol(protocol.Protocol):
             ref_u = urlparse(rq_ref_url)
             rq_ref_path = ref_u.path if ref_u.path == '/' else ref_u.path.rstrip('/')
             rq_ref = hashlib.md5(rq_ref_path).hexdigest()
-            self.redis.set('session::any||type::url||hash::{0}'.format(rq_ref), rq_ref_path)
+            self.redis.set(redis_key_template.format("any", "url", rq_ref), rq_ref_path)
             pass
         else:
             # client request doesn't have referrer. have to inject "o_ref"
@@ -201,6 +201,6 @@ class ClientProtocol(protocol.Protocol):
         }
         serialized = pickle.dumps(merged_data)
         md5_sum = hashlib.md5(serialized).hexdigest()
-        self.redis.set('session::{0}||type::transport||hash::{1}'.format(request['client_ip'], md5_sum), serialized)
+        self.redis.set(redis_key_template.format(request['client_ip'], "transport", md5_sum), serialized)
         pass
     pass

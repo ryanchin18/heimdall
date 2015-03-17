@@ -2,7 +2,7 @@
 
 """
 from listener import RedisListener
-from common import SeverityRecord
+from common import SeverityRecord, redis_key_template
 
 
 class AnalyserListener(RedisListener):
@@ -39,8 +39,8 @@ class AnalyserListener(RedisListener):
         pass
 
     def clean_garbage(self, session, hash_val):
-        self.delete('session::{0}||type::{1}||hash::{2}'.format(session, "transport", hash_val))
-        self.delete('session::{0}||type::{1}||hash::{2}'.format(session, "analyse", hash_val))
+        self.delete(redis_key_template.format(session, "transport", hash_val))
+        self.delete(redis_key_template.format(session, "analyse", hash_val))
         pass
 
     pass

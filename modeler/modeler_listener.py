@@ -2,7 +2,7 @@
 
 """
 from modeler import SessionGraph
-from common import current_time_milliseconds
+from common import redis_key_template
 from listener import RedisListener
 from modeler import TrafficRecord
 from factors import *
@@ -58,6 +58,6 @@ class ModelerListener(RedisListener):
         pass
 
     def notify_analyser(self, session, hash_val):
-        self.set('session::{0}||type::{1}||hash::{2}'.format(session, "analyse", hash_val), "analyser_event")
+        self.set(redis_key_template.format(session, "analyse", hash_val), "analyser_event")
         pass
     pass

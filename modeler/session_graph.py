@@ -2,7 +2,7 @@ __author__ = 'grainier'
 
 import graph_tool.all as gt
 from modeler import SingletonGraph
-from common import config, current_time_milliseconds
+from common import config, current_time_milliseconds, redis_key_template
 from exception import VertexDoesNotExists, PropertyDoesNotExists, EdgeDoesNotExists
 import redis
 
@@ -83,11 +83,11 @@ class SessionGraph(object):
         self.graph.vertex_properties["original_index"][v] = v_index
 
         # TODO : This is bad, DO it right
-        self.graph.vertex_properties["url"][v] = self.redis.get('session::any||type::url||hash::{0}'.format(vertex_id))
+        self.graph.vertex_properties["url"][v] = self.redis.get(redis_key_template.format("any", "url", vertex_id))
         # TODO : add other properties here, if there's any
 
         # add index to redis
-        self.redis.set('session::{0}||type::vertex||hash::{1}'.format(self.session, vertex_id), v_index)
+        self.redis.set(redis_key_template.format(self.session, "vertex", vertex_id), v_index)
         return v
         pass
 
@@ -209,7 +209,7 @@ class SessionGraph(object):
 
     def get_vertex(self, vertex_id):
         try:
-            v_index = self.redis.get('session::{0}||type::vertex||hash::{1}'.format(self.session, vertex_id))
+            v_index = self.redis.get(redis_key_template.format(self.session, "vertex", vertex_id))
             v = self.graph.vertex(v_index)
             v = v if v.is_valid() else None
         except TypeError as e:

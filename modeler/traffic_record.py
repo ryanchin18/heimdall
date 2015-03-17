@@ -1,7 +1,7 @@
 """
 
 """
-from common import config
+from common import config, redis_key_template
 import cPickle as pickle
 import redis
 
@@ -36,6 +36,6 @@ class TrafficRecord(dict):
     pass
 
 if __name__ == '__main__':
-    t = TrafficRecord("session::192.168.1.100||type::transport||hash::dfa34dd79637b34fa17cfd8f26d9daeb")
+    t = TrafficRecord(redis_key_template.format("192.168.1.100", "transport", "dfa34dd79637b34fa17cfd8f26d9daeb"))
     print "x"
     pass

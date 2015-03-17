@@ -23,3 +23,6 @@ loggers = {
 
 current_time_milliseconds = lambda: int(round(time.time() * 1000))
 
+# this template should be used to store records on redis
+redis_key_template = "session::{0}||type::{1}||hash::{2}"
+
