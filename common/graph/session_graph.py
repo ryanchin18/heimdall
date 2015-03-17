@@ -1,7 +1,7 @@
 __author__ = 'grainier'
 
 import graph_tool.all as gt
-from modeler import SingletonGraph
+from common.graph import SingletonGraph
 from common import config, current_time_milliseconds, redis_key_template
 from exception import VertexDoesNotExists, PropertyDoesNotExists, EdgeDoesNotExists
 import redis

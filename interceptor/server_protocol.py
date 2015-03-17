@@ -3,7 +3,7 @@
 """
 from twisted.internet import protocol, reactor
 from interceptor import ClientProtocol, HTTPRequest
-from common import config, current_time_milliseconds
+from common import config, current_time_milliseconds, SeverityRecord
 
 
 class ServerProtocol(protocol.Protocol):
@@ -15,6 +15,14 @@ class ServerProtocol(protocol.Protocol):
         pass
 
     def connectionMade(self):
+        # TODO : HERE we can check the severity and BREAK the transport
+        # http://twistedmatrix.com/documents/13.2.0/core/howto/servers.html
+        # (loseConnection() and abortConnection())
+        # self.transport.abortConnection()
+        if self.is_ban():
+            self.transport.abortConnection()
+            return
+
         factory = protocol.ClientFactory()
         factory.protocol = ClientProtocol
         factory.server = self
@@ -23,8 +31,6 @@ class ServerProtocol(protocol.Protocol):
             self.config.destination.get('port', 80),
             factory
         )
-
-        # TODO : I THINK CLIENT ERROR, BAN HANDLING, CAPTCHA REDIR SHOULD HAPPEN HERE
         pass
 
     # Client => Proxy
@@ -66,6 +72,12 @@ class ServerProtocol(protocol.Protocol):
     # Proxy => Client
     def write(self, data):
         self.transport.write(data)
+        pass
+
+    def is_ban(self):
+        ip = str(self.transport.getPeer().host)
+        sr = SeverityRecord(ip)
+        return sr.get_level() > 5
         pass
 
     pass

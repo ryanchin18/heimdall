@@ -6,7 +6,7 @@ import hashlib
 from twisted.internet import protocol
 from urlparse import urlparse, parse_qs
 from interceptor import parse_response
-from modeler import SessionGraph, ApplicationGraph
+from common.graph import SessionGraph, ApplicationGraph
 from common import config, current_time_milliseconds, redis_key_template
 import cPickle as pickle
 import redis

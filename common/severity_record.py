@@ -7,6 +7,7 @@ import redis
 
 
 class SeverityRecord(dict):
+
     def __init__(self, ip, severity=None):
         self.key = redis_key_template.format(ip, "severity", None)
         self.redis = redis.StrictRedis(
@@ -39,6 +40,11 @@ class SeverityRecord(dict):
     def save(self):
         serialized = pickle.dumps(dict(self))
         self.redis.set(self.key, serialized)
+        self.redis.expire(self.key, config.get('ban_time', 5 * 60))
+        pass
+
+    def get_level(self):
+        return self['severity']
         pass
 
     def update_severity(self, level):
