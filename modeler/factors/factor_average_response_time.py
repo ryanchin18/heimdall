@@ -1,4 +1,4 @@
-from factors import BaseFactor
+from modeler.factors import BaseFactor
 
 
 class FactorAverageResponseTime(BaseFactor):

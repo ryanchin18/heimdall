@@ -4,7 +4,7 @@
 from common.graph import SessionGraph
 from common import redis_key_template, TrafficRecord
 from common.listener import RedisListener
-from factors import *
+from modeler.factors import *
 
 
 class ModelerListener(RedisListener):

@@ -4,6 +4,7 @@
 from common.listener import RedisListener
 from common.graph import SessionGraph
 from common import SeverityRecord, redis_key_template
+from analyser.analysers import *
 
 
 class AnalyserListener(RedisListener):
@@ -25,19 +26,14 @@ class AnalyserListener(RedisListener):
         command = command.lower()
         # only need to care about set, del, expired commands
         if type_val == 'analyse' and command == 'set':
-            # load respective session graph
-            session_graph = SessionGraph(session)
 
-            # analyse the factors
-            arst = session_graph.get_graph_property('FactorAverageResponseTime')
-            arqi = session_graph.get_graph_property('FactorAverageRequestInterval')
+            # compute and store factors on session graph
+            for Analyser in BaseAnalyser.__subclasses__():
+                analyser = Analyser(session)
+                analyser.analyse()
+                pass
 
-            diff = arqi - arst
-            s = 0 if diff > 0 else (-1 * diff)
 
-            # set severity after analysing
-            severity = SeverityRecord(session, s)
-            severity.save()
 
             print "Analysed : ", key
 
