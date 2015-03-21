@@ -1,5 +1,5 @@
 from analyser.analysers import BaseAnalyser
-from common.graph import SessionGraph
+from common.graphs import SessionGraph
 
 
 class AnalyserARTARIDifference(BaseAnalyser):
