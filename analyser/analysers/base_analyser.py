@@ -1,7 +1,7 @@
 """
 The base class for all analysers that used to identify attackers and legitimate HTTP Traffic
 """
-from common import SeverityRecord
+from common.records import SeverityRecord
 
 
 class BaseAnalyser(object):

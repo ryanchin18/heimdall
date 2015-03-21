@@ -3,7 +3,8 @@
 """
 from twisted.internet import protocol, reactor
 from interceptor import ClientProtocol, HTTPRequest
-from common import config, current_time_milliseconds, SeverityRecord
+from common import config, current_time_milliseconds
+from common.records import SeverityRecord
 
 
 class ServerProtocol(protocol.Protocol):

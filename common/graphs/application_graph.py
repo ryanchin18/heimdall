@@ -1,6 +1,6 @@
 __author__ = 'grainier'
 
-from common.graph import SessionGraph
+from common.graphs import SessionGraph
 
 
 class ApplicationGraph(SessionGraph):
