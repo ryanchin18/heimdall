@@ -50,7 +50,7 @@ class FactorUserAgentCyclingRatio(BaseFactor):
         If the value of User-Agent Cycling Ratio is greater than 0, that implies
         there's been a User-Agents cycling within that session
         """
-        total_requests = self._session_graph.get_graph_property('traffic_records')
+        total_requests = self._session_graph.graph.num_edges()
         sorted_ua_usage = sorted(
             self._session_graph.get_graph_property('user_agents').iteritems(),
             key=operator.itemgetter(1),

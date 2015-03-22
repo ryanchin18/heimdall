@@ -28,9 +28,7 @@ class FactorAverageRequestInterval(BaseFactor):
         """
         session_length_milliseconds = self._session_graph.get_session_length()
         session_length_seconds = float(session_length_milliseconds) / 1000.
-
-        # total number of requests ( or responses ) are equal to number of traffic records received
-        total_requests = self._session_graph.get_graph_property('traffic_records')
+        total_requests = self._session_graph.graph.num_edges()
 
         average_request_interval = float(session_length_seconds) / float(total_requests)
         self.append_graph_factor('float', average_request_interval)

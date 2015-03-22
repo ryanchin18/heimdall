@@ -28,7 +28,6 @@ class SessionGraph(object):
             # add mandatory graph properties
             self.graph.graph_properties["session"] = self.graph.new_graph_property("string", self.session)
             self.graph.graph_properties["session_start"] = self.graph.new_graph_property("long", self.session_start)
-            self.graph.graph_properties["traffic_records"] = self.graph.new_graph_property("int", 0)
             self.graph.graph_properties["user_agents"] = self.graph.new_graph_property("object", {})
             self.graph.graph_properties["response_codes"] = self.graph.new_graph_property("object", {})
             self.graph.graph_properties["resource_types"] = self.graph.new_graph_property("object", {})
@@ -216,10 +215,6 @@ class SessionGraph(object):
             v = None
             pass
         return v
-        pass
-
-    def increment_records_count(self):
-        self.graph.graph_properties["traffic_records"] += 1
         pass
 
     def update_response_code_usage(self, response_code):

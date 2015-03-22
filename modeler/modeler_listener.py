@@ -34,7 +34,6 @@ class ModelerListener(RedisListener):
             traffic_record = TrafficRecord(key)
 
             # update graph variables
-            session_graph.increment_records_count()
             session_graph.update_user_agent_usage(traffic_record['user_agent'])
             session_graph.update_response_code_usage(traffic_record['response_code'])
             session_graph.update_resource_type_usage(traffic_record['response_type'])

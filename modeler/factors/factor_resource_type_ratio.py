@@ -44,7 +44,7 @@ class FactorResourceTypeRatio(BaseFactor):
         If the value of Resource Types Ratio is equal to 0, that implies
         someone tried to consecutively request for same type of resource (like hot-linking)
         """
-        total_requests = self._session_graph.get_graph_property('traffic_records')
+        total_requests = self._session_graph.graph.num_edges()
         sorted_rt_usage = sorted(
             self._session_graph.get_graph_property('resource_types').iteritems(),
             key=operator.itemgetter(1),
