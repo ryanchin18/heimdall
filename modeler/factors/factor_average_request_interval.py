@@ -20,19 +20,19 @@ class FactorAverageRequestInterval(BaseFactor):
         Compute the Average Request Interval
 
         Variables Required:
-            * Length of the Session in Seconds (T)
-            * Number of Requests (Per Graph or Per Node) (N)
+            * Length of the Session in Seconds (SL)
+            * Total Requests Count (TR)
 
         Calculation:
-            Average Request Interval = L / N
+            Average Request Interval (ARI) = SL / TR
         """
-        session_length_milliseconds = self._session_graph.get_session_length()
-        session_length_seconds = float(session_length_milliseconds) / 1000.
-        total_requests = self._session_graph.graph.num_edges()
-        total_requests = total_requests if total_requests > 0 else 1
+        sl_milliseconds = self._session_graph.get_session_length()
+        sl = float(sl_milliseconds) / 1000.
+        tr = self._session_graph.graph.num_edges()
+        tr = tr if tr > 0 else 1
 
-        average_request_interval = float(session_length_seconds) / float(total_requests)
-        self.append_graph_factor('float', average_request_interval)
-        print "Average Request Interval : ", average_request_interval
+        ari = float(sl) / float(tr)
+        self.append_graph_factor('float', ari)
+        print "Average Request Interval : ", ari
         pass
     pass

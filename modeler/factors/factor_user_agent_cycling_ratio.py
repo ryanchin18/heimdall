@@ -26,9 +26,9 @@ class FactorUserAgentCyclingRatio(BaseFactor):
         Compute User-Agent Cycling Ratio.
         
         Variables Required:
-            * Total Requests Count, 
+            * Total Requests Count (TR),
             * Unique User-Agents per session and their usages as a Dictionary
-              sorted by Usage in descending order
+              sorted by Usage in descending order (SUU)
 
         Calculation:
         Assume sorted User-Agents usage dictionary as this
@@ -50,14 +50,14 @@ class FactorUserAgentCyclingRatio(BaseFactor):
         If the value of User-Agent Cycling Ratio is greater than 0, that implies
         there's been a User-Agents cycling within that session
         """
-        total_requests = self._session_graph.graph.num_edges()
-        total_requests = total_requests if total_requests > 0 else 1
-        sorted_ua_usage = sorted(
+        tr = self._session_graph.graph.num_edges()
+        tr = tr if tr > 0 else 1
+        suu = sorted(
             self._session_graph.get_graph_property('user_agents').iteritems(),
             key=operator.itemgetter(1),
             reverse=True
         )
-        ua_cycle_ratio = float(total_requests - sorted_ua_usage[0][1]) / float(total_requests)
+        ua_cycle_ratio = float(tr - suu[0][1]) / float(tr)
         self.append_graph_factor('float', ua_cycle_ratio)
         print "User-Agent Cycling Ratio : ", ua_cycle_ratio
         pass

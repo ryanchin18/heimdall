@@ -19,24 +19,24 @@ class FactorAverageResponseTime(BaseFactor):
         Compute the Average Response Time
 
         Variables Required:
-            * Current Average Response Time (A)
-            * Number of Responses (N) (Including new Response)
-            * Time Taken For New Response (T)
+            * Current Average Response Time (ART)
+            * Total Response Count (TR) (Including new Response)
+            * Time Taken For New Response (TFR)
 
         Calculation:
-            * Average Response Time = ((A * (N - 1)) + T) / N
+            * Average Response Time = ((ART * (TR - 1)) + TFR) / TR
         """
-        current_average = self._session_graph.get_graph_property(self._FACTOR_KEY)
-        current_average = current_average if current_average else 0.
-        total_responses = self._session_graph.graph.num_edges()
-        total_responses = total_responses if total_responses > 0 else 1
+        art = self._session_graph.get_graph_property(self._FACTOR_KEY)
+        art = art if art else 0.
+        tr = self._session_graph.graph.num_edges()
+        tr = tr if tr > 0 else 1
 
-        response_time_milliseconds = self._traffic_record['response_time']
-        response_time_seconds = float(response_time_milliseconds) / 1000.
+        tfr_milliseconds = self._traffic_record['response_time']
+        tfr = float(tfr_milliseconds) / 1000.
 
-        average_response_time = ((current_average * float(total_responses - 1)) + response_time_seconds) / float(total_responses)
-        self.append_graph_factor('float', average_response_time)
+        new_art = ((art * float(tr - 1)) + tfr) / float(tr)
+        self.append_graph_factor('float', new_art)
 
-        print "Average Response Time : ", average_response_time
+        print "Average Response Time : ", new_art
         pass
     pass

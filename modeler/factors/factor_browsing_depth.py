@@ -22,7 +22,7 @@ class FactorBrowsingDepth(BaseFactor):
             * Max Span of Graph
 
         Calculation:
-            Browsing Depth = Edges on Minimum Span Tree (from initial vertex)
+            Browsing Depth (BD) = Edges on Minimum Span Tree (from initial vertex)
 
             Get the minimum spanning tree using Prim's algorithm
 
@@ -41,8 +41,9 @@ class FactorBrowsingDepth(BaseFactor):
         # therefore, sum of edges will give number of edges in mst.
         # this way parallel edges will also be ignored.
         edges_in_path = sum(all_edges)
-        self.append_graph_factor('int', edges_in_path)
+        bd = edges_in_path
+        self.append_graph_factor('int', bd)
 
-        print "Browsing Depth : ", edges_in_path
+        print "Browsing Depth : ", bd
         pass
     pass

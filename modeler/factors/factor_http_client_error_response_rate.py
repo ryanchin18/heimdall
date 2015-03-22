@@ -20,23 +20,24 @@ class FactorHTTPClientErrorResponseRate(BaseFactor):
         Compute the HTTP Client Error Response Rate
 
         Variables Required:
-            * Total Number of HTTP Client Error (4XX) occurrences (E)
-            * Total Number of Requests Count (N)
+            * Response code Usage (RCU)
+            * Total Number of HTTP Client Error (4XX) occurrences (TE)
+            * Total Number of Requests (TR)
 
         Calculation:
-            HTTP Client Error Response Rate = E / N
+            HTTP Client Error Response Rate (ERR) = TE / TR
         """
-        total_requests = self._session_graph.graph.num_edges()
-        total_requests = total_requests if total_requests > 0 else 1
+        tr = self._session_graph.graph.num_edges()
+        tr = tr if tr > 0 else 1
         rcu = self._session_graph.get_graph_property('response_codes')
-        total_errors = 0
+        te = 0
         for code in rcu.keys():
             if 400 <= code < 500:
-                total_errors += rcu[code]
+                te += rcu[code]
                 pass
             pass
-        error_rate = 0 if total_errors <= 0 else float(total_errors) / float(total_requests)
-        self.append_graph_factor('float', error_rate)
-        print "HTTP Client Error Response Rate : ", error_rate
+        err = 0 if te <= 0 else float(te) / float(tr)
+        self.append_graph_factor('float', err)
+        print "HTTP Client Error Response Rate : ", err
         pass
     pass
