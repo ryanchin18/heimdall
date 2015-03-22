@@ -1,4 +1,5 @@
 from modeler.factors import BaseFactor
+import graph_tool.all as gt
 
 
 class FactorBrowsingDepth(BaseFactor):
@@ -21,7 +22,27 @@ class FactorBrowsingDepth(BaseFactor):
             * Max Span of Graph
 
         Calculation:
-            Browsing Depth = Max Span of Graph
+            Browsing Depth = Edges on Minimum Span Tree (from initial vertex)
+
+            Get the minimum spanning tree using Prim's algorithm
+
+        Analysis:
+            More browsing depth means that the requester isn't targeting on a
+            particular resource
         """
+        mst = gt.min_spanning_tree(
+            self._session_graph.graph,
+            root=self._session_graph.graph.vertex(0)
+        )
+        all_edges = mst.get_array()
+
+        # edge in mst will have a value of 1,
+        # and other edges will have a value of 0
+        # therefore, sum of edges will give number of edges in mst.
+        # this way parallel edges will also be ignored.
+        edges_in_path = sum(all_edges)
+        self.append_graph_factor('int', edges_in_path)
+
+        print "Browsing Depth : ", edges_in_path
         pass
     pass
