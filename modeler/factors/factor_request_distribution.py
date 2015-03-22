@@ -32,6 +32,7 @@ class FactorRequestDistribution(BaseFactor):
         """
         nv = self._session_graph.graph.num_vertices()
         tr = self._session_graph.graph.num_edges()
+        tr = tr if tr > 0 else 1
         if nv > 1:
             arpr = float(tr) / float(nv)
             diff = 0

@@ -27,6 +27,7 @@ class FactorResponseSizeAverage(BaseFactor):
         rsa = self._session_graph.get_graph_property(self._FACTOR_KEY)
         rsa = rsa if rsa else 0.
         tr = self._session_graph.graph.num_edges()
+        tr = tr if tr > 0 else 1
         rs = self._traffic_record['response_size']
         rsa = ((float(rsa) * (float(tr) - 1.)) + float(rs)) / float(tr)
         self.append_graph_factor('float', rsa)

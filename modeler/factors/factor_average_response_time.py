@@ -29,6 +29,7 @@ class FactorAverageResponseTime(BaseFactor):
         current_average = self._session_graph.get_graph_property(self._FACTOR_KEY)
         current_average = current_average if current_average else 0.
         total_responses = self._session_graph.graph.num_edges()
+        total_responses = total_responses if total_responses > 0 else 1
 
         response_time_milliseconds = self._traffic_record['response_time']
         response_time_seconds = float(response_time_milliseconds) / 1000.

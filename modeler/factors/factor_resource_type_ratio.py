@@ -45,6 +45,7 @@ class FactorResourceTypeRatio(BaseFactor):
         someone tried to consecutively request for same type of resource (like hot-linking)
         """
         total_requests = self._session_graph.graph.num_edges()
+        total_requests = total_requests if total_requests > 0 else 1
         sorted_rt_usage = sorted(
             self._session_graph.get_graph_property('resource_types').iteritems(),
             key=operator.itemgetter(1),

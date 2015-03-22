@@ -51,6 +51,7 @@ class FactorUserAgentCyclingRatio(BaseFactor):
         there's been a User-Agents cycling within that session
         """
         total_requests = self._session_graph.graph.num_edges()
+        total_requests = total_requests if total_requests > 0 else 1
         sorted_ua_usage = sorted(
             self._session_graph.get_graph_property('user_agents').iteritems(),
             key=operator.itemgetter(1),

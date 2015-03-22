@@ -27,6 +27,7 @@ class FactorHTTPClientErrorResponseRate(BaseFactor):
             HTTP Client Error Response Rate = E / N
         """
         total_requests = self._session_graph.graph.num_edges()
+        total_requests = total_requests if total_requests > 0 else 1
         rcu = self._session_graph.get_graph_property('response_codes')
         total_errors = 0
         for code in rcu.keys():
