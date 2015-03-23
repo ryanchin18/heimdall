@@ -28,12 +28,11 @@ class SessionGraph(object):
             # add mandatory graph properties
             self.graph.graph_properties["session"] = self.graph.new_graph_property("string", self.session)
             self.graph.graph_properties["session_start"] = self.graph.new_graph_property("long", self.session_start)
+            self.graph.graph_properties["last_request"] = self.graph.new_graph_property("long", self.session_start)
             self.graph.graph_properties["user_agents"] = self.graph.new_graph_property("object", {})
             self.graph.graph_properties["response_codes"] = self.graph.new_graph_property("object", {})
             self.graph.graph_properties["resource_types"] = self.graph.new_graph_property("object", {})
-
-            # add edge properties
-            # self.graph.edge_properties["referer"] = self.graph.new_edge_property("string")  # this is shouldn't be an edge property
+            self.graph.graph_properties["request_intervals"] = self.graph.new_graph_property("object", {})
 
             # add vertex properties
             self.graph.vertex_properties["vertex_id"] = self.graph.new_vertex_property("string")  # do not remove this
@@ -242,6 +241,61 @@ class SessionGraph(object):
         else:
             rtu[resource_type] = 1
         self.graph.graph_properties["resource_types"] = rtu
+        pass
+
+    def update_request_intervals(self):
+        last_request = self.graph.graph_properties["last_request"]
+        this_request = current_time_milliseconds()
+        intervals = self.graph.graph_properties["request_intervals"]
+        diff = abs(this_request - last_request)
+
+        if 0 <= diff <= 500:
+            if '0-500' in intervals:
+                intervals['0-500'] += 1
+                pass
+            else:
+                intervals['0-500'] = 1
+                pass
+            pass
+
+        elif 500 < diff <= 1500:
+            if '501-1500' in intervals:
+                intervals['501-1500'] += 1
+                pass
+            else:
+                intervals['501-1500'] = 1
+                pass
+            pass
+
+        elif 1500 < diff <= 4500:
+            if '1501-4500' in intervals:
+                intervals['1501-4500'] += 1
+                pass
+            else:
+                intervals['1501-4500'] = 1
+                pass
+            pass
+
+        elif 4500 < diff <= 13500:
+            if '4501-13500' in intervals:
+                intervals['4501-13500'] += 1
+                pass
+            else:
+                intervals['4501-13500'] = 1
+                pass
+            pass
+
+        else:
+            if '13501<' in intervals:
+                intervals['13501<'] += 1
+                pass
+            else:
+                intervals['13501<'] = 1
+                pass
+            pass
+
+        self.graph.graph_properties["last_request"] = this_request
+        self.graph.graph_properties["request_intervals"] = intervals
         pass
 
     def get_session_length(self):
