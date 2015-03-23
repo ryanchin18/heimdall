@@ -27,8 +27,10 @@ class SessionGraph(object):
 
             # add mandatory graph properties
             self.graph.graph_properties["session"] = self.graph.new_graph_property("string", self.session)
+            self.graph.graph_properties["last_request"] = self.graph.new_graph_property("string", '')
             self.graph.graph_properties["session_start"] = self.graph.new_graph_property("long", self.session_start)
-            self.graph.graph_properties["last_request"] = self.graph.new_graph_property("long", self.session_start)
+            self.graph.graph_properties["consecutive_requests"] = self.graph.new_graph_property("int", 0)
+            self.graph.graph_properties["last_request_time"] = self.graph.new_graph_property("long", self.session_start)
             self.graph.graph_properties["user_agents"] = self.graph.new_graph_property("object", {})
             self.graph.graph_properties["response_codes"] = self.graph.new_graph_property("object", {})
             self.graph.graph_properties["resource_types"] = self.graph.new_graph_property("object", {})
@@ -244,7 +246,7 @@ class SessionGraph(object):
         pass
 
     def update_request_intervals(self):
-        last_request = self.graph.graph_properties["last_request"]
+        last_request = self.graph.graph_properties["last_request_time"]
         this_request = current_time_milliseconds()
         intervals = self.graph.graph_properties["request_intervals"]
         diff = abs(this_request - last_request)
@@ -294,8 +296,16 @@ class SessionGraph(object):
                 pass
             pass
 
-        self.graph.graph_properties["last_request"] = this_request
+        self.graph.graph_properties["last_request_time"] = this_request
         self.graph.graph_properties["request_intervals"] = intervals
+        pass
+
+    def update_consecutive_requests(self, request_uri):
+        last_request = self.graph.graph_properties["last_request"]
+        if last_request == request_uri:
+            self.graph.graph_properties["consecutive_requests"] += 1
+            pass
+        self.graph.graph_properties["last_request"] = request_uri
         pass
 
     def get_session_length(self):

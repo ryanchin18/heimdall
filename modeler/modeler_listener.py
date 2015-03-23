@@ -38,6 +38,7 @@ class ModelerListener(RedisListener):
             session_graph.update_user_agent_usage(traffic_record['user_agent'])
             session_graph.update_response_code_usage(traffic_record['response_code'])
             session_graph.update_resource_type_usage(traffic_record['response_type'])
+            session_graph.update_consecutive_requests(traffic_record['request_uri'])
 
             # compute and store factors on session graph
             for Factor in BaseFactor.__subclasses__():
