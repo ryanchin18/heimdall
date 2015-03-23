@@ -118,10 +118,7 @@ class ClientProtocol(protocol.Protocol):
         self.factory.server.write(data)
 
         # ------------------------------------------------------------
-        # TODO : Need to get Response time (If there is a way)
-        # METHOD
-        # Resource Type
-
+        # persist and notify
         response_data = {
             "time": current_time_milliseconds(),
             "client_ip": rq_cilent_ip,
@@ -138,28 +135,7 @@ class ClientProtocol(protocol.Protocol):
             "request_uri": rq_uri_path,
             "response_type": f_type,
         }
-
         self.persist_and_notify(request_data, response_data)
-
-        # ------------------------------------------------------------
-        # add to session graph
-        b = SessionGraph(rq_cilent_ip)
-        b.add_edge(
-            {'vertex_id': rq_ref},
-            {'vertex_id': res_ref}
-        )
-        b.print_graph()
-        b.save()
-
-        # TODO : This is just checking, have to write a better sync method
-
-        bg = ApplicationGraph()
-        bg.add_edge(
-            {'vertex_id': rq_ref},
-            {'vertex_id': res_ref}
-        )
-        bg.print_graph()
-        bg.save()
         pass
 
     # Proxy => Server

@@ -54,7 +54,7 @@ session::any||type::url||hash::{hash}
 storing session key for expiration
 session::{ip}||type::session||hash::{some_hash}
 
-storing http transport
+storing http transport (hash part is the hash of the transport)
 session::{ip}||type::transport||hash::{hash}
 
 storing severity record

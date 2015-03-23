@@ -35,6 +35,7 @@ class SessionGraph(object):
             self.graph.graph_properties["response_codes"] = self.graph.new_graph_property("object", {})
             self.graph.graph_properties["resource_types"] = self.graph.new_graph_property("object", {})
             self.graph.graph_properties["request_intervals"] = self.graph.new_graph_property("object", {})
+            self.graph.graph_properties["request_sequence"] = self.graph.new_graph_property("vector<int>", [])
 
             # add vertex properties
             self.graph.vertex_properties["vertex_id"] = self.graph.new_vertex_property("string")  # do not remove this
@@ -306,6 +307,10 @@ class SessionGraph(object):
             self.graph.graph_properties["consecutive_requests"] += 1
             pass
         self.graph.graph_properties["last_request"] = request_uri
+        pass
+
+    def update_sequence(self, destination_vertex_index):
+        self.graph.graph_properties["request_sequence"].append(destination_vertex_index)
         pass
 
     def get_session_length(self):

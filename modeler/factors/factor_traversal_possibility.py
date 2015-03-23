@@ -1,4 +1,6 @@
 from modeler.factors import BaseFactor
+from common.graphs import ApplicationGraph, DFSearchVisitor, BFSearchVisitor
+import graph_tool.all as gt
 
 
 class FactorTraversalPossibility(BaseFactor):
@@ -11,7 +13,7 @@ class FactorTraversalPossibility(BaseFactor):
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
-        self._FACTOR_INDEX = 9
+        self._FACTOR_INDEX = 10
         self._FACTOR_KEY = "FactorTraversalPossibility"
         pass
 
@@ -25,5 +27,22 @@ class FactorTraversalPossibility(BaseFactor):
         Calculation:
             Traversal Possibility =
         """
+        # TODO : Index 0 might not always be the ROOT
+        application_graph = ApplicationGraph()
+
+        # for dfs
+        dfs_visitor = DFSearchVisitor()
+        gt.dfs_search(application_graph.graph, application_graph.graph.vertex(0), dfs_visitor)
+
+        # for bfs
+        bfs_visitor = BFSearchVisitor()
+        gt.bfs_search(application_graph.graph, application_graph.graph.vertex(0), bfs_visitor)
+
+        sequence = self._session_graph.get_graph_property('request_sequence')
+
+        print "BFS predecessor : ", bfs_visitor.sequence
+        print "DFS predecessor : ", dfs_visitor.sequence
+        print "Traversal Possibility : ", sequence
+
         pass
     pass

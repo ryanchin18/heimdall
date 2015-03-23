@@ -1,6 +1,7 @@
 __author__ = 'grainier'
 
 from common.graphs import SessionGraph
+import graph_tool.all as gt
 
 
 class ApplicationGraph(SessionGraph):
@@ -14,4 +15,8 @@ class ApplicationGraph(SessionGraph):
 
     def filter(self, prop):
 
+        pass
+
+    def remove_parallel_edges(self):
+        gt.remove_parallel_edges(self.graph)
         pass

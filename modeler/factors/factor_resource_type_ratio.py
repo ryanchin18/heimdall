@@ -11,7 +11,7 @@ class FactorResourceTypeRatio(BaseFactor):
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
-        self._FACTOR_INDEX = 7
+        self._FACTOR_INDEX = 8
         self._FACTOR_KEY = "FactorResourceTypeRatio"
         pass
 

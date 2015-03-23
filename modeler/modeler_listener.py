@@ -1,7 +1,7 @@
 """
 
 """
-from common.graphs import SessionGraph
+from common.graphs import SessionGraph, ApplicationGraph
 from common import redis_key_template
 from common.records import TrafficRecord
 from common.listeners import RedisListener
@@ -33,8 +33,36 @@ class ModelerListener(RedisListener):
             # get the traffic record
             traffic_record = TrafficRecord(key)
 
+            origin = traffic_record['origin_hash']
+            destination = traffic_record['destination_hash']
+
+            # add session to the graph
+            session_graph.add_edge(
+                {'vertex_id': origin},
+                {'vertex_id': destination}
+            )
+            session_graph.print_graph()
+            session_graph.save()
+
+            # ----------------------------------------------------------------
+            # REMOVE THIS LATER
+            # TODO : This is just checking, have to write a better sync method
+            ag = ApplicationGraph()
+            ag.add_edge(
+                {'vertex_id': origin},
+                {'vertex_id': destination}
+            )
+            ag.remove_parallel_edges()
+            ag.print_graph()
+            ag.save()
+            # ----------------------------------------------------------------
+
+            # get the destination vertex
+            destination_vertex = session_graph.get_vertex(destination)
+
             # update graph variables
             session_graph.update_request_intervals()
+            session_graph.update_sequence(int(destination_vertex))
             session_graph.update_user_agent_usage(traffic_record['user_agent'])
             session_graph.update_response_code_usage(traffic_record['response_code'])
             session_graph.update_resource_type_usage(traffic_record['response_type'])
