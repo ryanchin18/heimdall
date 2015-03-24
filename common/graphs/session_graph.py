@@ -335,6 +335,7 @@ class SessionGraph(object):
     def print_graph(self):
         gt.graph_draw(
             self.graph,
+            # vertex_text=self.graph.vertex_index,
             vertex_text=self.graph.vertex_properties["url"],
             vertex_font_size=8,
             edge_pen_width=1,
