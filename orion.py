@@ -7,7 +7,7 @@ from twisted.python import log
 from interceptor import ServerProtocol
 from modeler import ModelerListener
 from analyser import AnalyserListener
-from common import config
+from common import REDIS_POOL, config
 import sys
 
 
@@ -15,17 +15,11 @@ def run():
     log.startLogging(sys.stdout)
 
     # initialize the ModelerListener and listen on a separate thread
-    ml = ModelerListener(
-        config.redis.get('host', '127.0.0.1'),
-        config.redis.get('port', '6379')
-    )
+    ml = ModelerListener(connection_pool=REDIS_POOL)
     ml.listen()
 
     # initialize the AnalyserListener and listen on a separate thread
-    al = AnalyserListener(
-        config.redis.get('host', '127.0.0.1'),
-        config.redis.get('port', '6379')
-    )
+    al = AnalyserListener(connection_pool=REDIS_POOL)
     al.listen()
 
     # initialize and start the interceptor reactor

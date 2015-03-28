@@ -6,18 +6,14 @@ import hashlib
 from twisted.internet import protocol
 from urlparse import urlparse, parse_qs
 from interceptor import parse_response
-from common.graphs import SessionGraph, ApplicationGraph
-from common import config, current_time_milliseconds, redis_key_template
+from common import REDIS_POOL, config, current_time_milliseconds, redis_key_template
 import cPickle as pickle
 import redis
 
 
 class ClientProtocol(protocol.Protocol):
     def __init__(self):
-        self.redis = redis.StrictRedis(
-            config.redis.get('host', '127.0.0.1'),
-            config.redis.get('port', '6379')
-        )
+        self.redis = redis.Redis(connection_pool=REDIS_POOL)
         pass
 
     def connectionMade(self):
@@ -36,6 +32,7 @@ class ClientProtocol(protocol.Protocol):
         rq_uri = request_data['request_uri']
         rq_ref_url = request_data['referer']
         rq_cilent_ip = request_data['client_ip']
+        rq_host = request_data['host']
 
         # url of response for this request will be the referrer of
         # requests originated from rendered response

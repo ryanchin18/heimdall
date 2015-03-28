@@ -1,7 +1,7 @@
 """
 
 """
-from common import config, redis_key_template
+from common import REDIS_POOL, config, redis_key_template
 import cPickle as pickle
 import redis
 
@@ -10,11 +10,7 @@ class SeverityRecord(dict):
 
     def __init__(self, ip, severity=None):
         self.key = redis_key_template.format(ip, "severity", None)
-        self.redis = redis.StrictRedis(
-            config.redis.get('host', '127.0.0.1'),
-            config.redis.get('port', '6379')
-        )
-
+        self.redis = redis.Redis(connection_pool=REDIS_POOL)
         if severity:
             dictionary = {
                 "ip": ip,

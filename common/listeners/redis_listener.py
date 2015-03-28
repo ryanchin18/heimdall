@@ -1,11 +1,11 @@
 """
 
 """
-from common import config
+from common import REDIS_POOL
 import redis
 
 
-class RedisListener(redis.StrictRedis):
+class RedisListener(redis.Redis):
     def __init__(self, *args, **kwargs):
         super(RedisListener, self).__init__(*args, **kwargs)
         # read http://redis.io/topics/notifications to
@@ -52,9 +52,7 @@ class RedisListener(redis.StrictRedis):
     pass
 
 if __name__ == '__main__':
-    rl = RedisListener(
-        config.redis.get('host', '127.0.0.1'),
-        config.redis.get('port', '6379')
-    )
+    rl = RedisListener(connection_pool=REDIS_POOL)
+
     rl.listen()
     pass
