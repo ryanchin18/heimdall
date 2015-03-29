@@ -1,10 +1,6 @@
-"""
-http://stackoverflow.com/questions/15640640/python-twisted-man-in-the-middle-implementation/15645169#15645169
-http://www.mostthingsweb.com/2013/08/a-basic-man-in-the-middle-proxy-with-twisted/
-"""
-from twisted.internet import protocol, reactor
+from twisted.internet import reactor
 from twisted.python import log
-from interceptor import ServerProtocol
+from interceptor import ProxyFactory
 from modeler import ModelerListener
 from analyser import AnalyserListener
 from common import REDIS_POOL, config
@@ -23,9 +19,7 @@ def run():
     al.listen()
 
     # initialize and start the interceptor reactor
-    factory = protocol.ServerFactory()
-    factory.protocol = ServerProtocol
-    reactor.listenTCP(config.interceptor.get('port', 9191), factory)
+    reactor.listenTCP(config.interceptor.get('port', 9191), ProxyFactory())
     reactor.run()
 
     # this is only reachable once the reactor
