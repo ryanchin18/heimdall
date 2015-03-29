@@ -1,5 +1,6 @@
 from common import REDIS_POOL
 from common.records import TrafficRecord
+from modeler import ModelerListener
 import cPickle as pickle
 import redis
 import operator
@@ -17,9 +18,14 @@ keys = None
 records = None
 records_dict = None
 
+# requires a ModelListener to model captured records
+# initialize the ModelerListener but do not listen to events
+ml = ModelerListener(connection_pool=REDIS_POOL)
+
 # model and calculate values
 for record in sorted_records:
-
+    ml.process_command(None, 'set', record['client_ip'], 'transport', None, traffic_record=record, notify_analyser=False)
+    print "Done"
     pass
 
 

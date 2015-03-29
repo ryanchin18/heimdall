@@ -23,7 +23,7 @@ class ModelerListener(RedisListener):
             pass
         pass
 
-    def process_command(self, key, command, session, type_val, hash_val):
+    def process_command(self, key, command, session, type_val, hash_val, traffic_record=None, notify_analyser=True):
         command = command.lower()
         # only need to care about set, del, expired commands
         if type_val == 'transport' and command == 'set':
@@ -31,7 +31,8 @@ class ModelerListener(RedisListener):
             session_graph = SessionGraph(session)
 
             # get the traffic record
-            traffic_record = TrafficRecord(key)
+            if traffic_record is None:
+                traffic_record = TrafficRecord(key)
 
             origin = traffic_record['origin_hash']
             destination = traffic_record['destination_hash']
@@ -73,7 +74,9 @@ class ModelerListener(RedisListener):
                 factor = Factor(session, session_graph, traffic_record)
                 factor.compute()
                 pass
-            self.notify_analyser(session, hash_val)
+
+            if notify_analyser:
+                self.notify_analyser(session, hash_val)
             pass
 
         elif type_val == 'session' and command == 'expired':
