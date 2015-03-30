@@ -10,9 +10,9 @@ import redis
 
 class TrafficRecord(dict):
     def __init__(self, key=None, record=None):
+        self.redis = redis.Redis(connection_pool=REDIS_POOL)
         if key is not None:
             self.key = key
-            self.redis = redis.Redis(connection_pool=REDIS_POOL)
             record = self.redis.get(key)
             if record:
                 dictionary = pickle.loads(record)

@@ -23,7 +23,7 @@ records_dict = None
 ml = ModelerListener(connection_pool=REDIS_POOL)
 
 # model and calculate values
-for record in sorted_records:
+for key, record in sorted_records:
     ml.process_command(None, 'set', record['client_ip'], 'transport', None, traffic_record=record, notify_analyser=False)
     print "Done"
     pass
