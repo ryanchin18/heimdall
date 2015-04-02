@@ -32,5 +32,5 @@ redis_key_template = "session::{0}||type::{1}||hash::{2}"
 REDIS_POOL = redis.ConnectionPool(
     host=config.redis.get('host', '127.0.0.1'),
     port=config.redis.get('port', '6379'),
-    db=0
+    db=config.redis.get('db', 0)
 )
