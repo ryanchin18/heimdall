@@ -23,7 +23,7 @@ class ModelerListener(RedisListener):
             pass
         pass
 
-    def process_command(self, key, command, session, type_val, hash_val, traffic_record=None, notify_analyser=True):
+    def process_command(self, key, command, session, type_val, hash_val, traffic_record=None, notify_analyser=True, bulk_restore=False):
         command = command.lower()
         # only need to care about set, del, expired commands
         if type_val == 'transport' and command == 'set':
@@ -42,8 +42,10 @@ class ModelerListener(RedisListener):
                 {'vertex_id': origin},
                 {'vertex_id': destination}
             )
-            session_graph.print_graph()
-            session_graph.save()
+            if not bulk_restore:
+                session_graph.print_graph()
+                session_graph.save()
+                pass
 
             # ----------------------------------------------------------------
             # REMOVE THIS LATER
@@ -53,9 +55,11 @@ class ModelerListener(RedisListener):
                 {'vertex_id': origin},
                 {'vertex_id': destination}
             )
-            ag.remove_parallel_edges()
-            ag.print_graph()
-            ag.save()
+            if not bulk_restore:
+                ag.remove_parallel_edges()
+                ag.print_graph()
+                ag.save()
+                pass
             # ----------------------------------------------------------------
 
             # get the destination vertex
@@ -91,5 +95,17 @@ class ModelerListener(RedisListener):
 
     def notify_analyser(self, session, hash_val):
         self.set(redis_key_template.format(session, "analyse", hash_val), "analyser_event")
+        pass
+
+    def bulk_process(self):
+
+        pass
+
+    def bulk_save(self):
+
+        pass
+
+    def bulk_print(self):
+
         pass
     pass

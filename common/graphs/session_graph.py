@@ -1,16 +1,17 @@
 __author__ = 'grainier'
 
 import graph_tool.all as gt
-from common.graphs import SingletonGraph
+from common.graphs import GraphReference, SingletonGraph
 from common import REDIS_POOL, current_time_milliseconds, redis_key_template
 from common.exceptions import VertexDoesNotExists, PropertyDoesNotExists, EdgeDoesNotExists
 import redis
 
 
-class SessionGraph(object):
+class SessionGraph(GraphReference):
     __metaclass__ = SingletonGraph
 
     def __init__(self, session, temp=True):
+        super(SessionGraph, self).__init__()
         self.session = session
         self.temp = temp
         self.redis = redis.Redis(connection_pool=REDIS_POOL)
