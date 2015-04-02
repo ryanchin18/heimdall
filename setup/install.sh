@@ -17,11 +17,17 @@ DISTRIBUTION=$(lsb_release -s -c)
 
 # List of apt-get applications to install
 LIST_OF_APPS="
-    python-setuptools
+    build-essential
     python-dev
+    python-setuptools
+    python-numpy
+    python-scipy
+    python-matplotlib
     python-software-properties
     python-graph-tool
     redis-server
+    libatlas-dev
+    libatlas3gf-base
     "
 
 # List of easy install applications to install
