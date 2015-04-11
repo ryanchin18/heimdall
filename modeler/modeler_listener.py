@@ -23,7 +23,7 @@ class ModelerListener(RedisListener):
             pass
         pass
 
-    def process_command(self, key, command, session, type_val, hash_val):
+    def process_command(self, key, command, session, type_val, hash_val, traffic_record=None, notify_analyser=True, bulk_restore=False):
         command = command.lower()
         # only need to care about set, del, expired commands
         if type_val == 'transport' and command == 'set':
@@ -31,7 +31,8 @@ class ModelerListener(RedisListener):
             session_graph = SessionGraph(session)
 
             # get the traffic record
-            traffic_record = TrafficRecord(key)
+            if traffic_record is None:
+                traffic_record = TrafficRecord(key)
 
             origin = traffic_record['origin_hash']
             destination = traffic_record['destination_hash']
@@ -41,8 +42,10 @@ class ModelerListener(RedisListener):
                 {'vertex_id': origin},
                 {'vertex_id': destination}
             )
-            session_graph.print_graph()
-            session_graph.save()
+            if not bulk_restore:
+                session_graph.print_graph()
+                session_graph.save()
+                pass
 
             # ----------------------------------------------------------------
             # REMOVE THIS LATER
@@ -52,9 +55,11 @@ class ModelerListener(RedisListener):
                 {'vertex_id': origin},
                 {'vertex_id': destination}
             )
-            ag.remove_parallel_edges()
-            ag.print_graph()
-            ag.save()
+            if not bulk_restore:
+                ag.remove_parallel_edges()
+                ag.print_graph()
+                ag.save()
+                pass
             # ----------------------------------------------------------------
 
             # get the destination vertex
@@ -73,7 +78,9 @@ class ModelerListener(RedisListener):
                 factor = Factor(session, session_graph, traffic_record)
                 factor.compute()
                 pass
-            self.notify_analyser(session, hash_val)
+
+            if notify_analyser:
+                self.notify_analyser(session, hash_val)
             pass
 
         elif type_val == 'session' and command == 'expired':
@@ -88,5 +95,17 @@ class ModelerListener(RedisListener):
 
     def notify_analyser(self, session, hash_val):
         self.set(redis_key_template.format(session, "analyse", hash_val), "analyser_event")
+        pass
+
+    def bulk_process(self):
+
+        pass
+
+    def bulk_save(self):
+
+        pass
+
+    def bulk_print(self):
+
         pass
     pass

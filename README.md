@@ -61,6 +61,16 @@ storing severity record
 session::{ip}||type::severity||hash::{hash}
 
 
+Load redis.rdb dump to the redis server
+
+ps -ef|grep "redis"
+redis-cli SHUTDOWN
+sudo stop redis-server
+sudo rm -f /var/lib/redis/redis.rdb
+sudo cp ~/Desktop/redis.rdb /var/lib/redis/
+sudo redis-server /etc/redis/redis.conf
+
+
 Redis in Mac
 brew install redis
 

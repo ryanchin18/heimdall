@@ -1,22 +1,20 @@
 __author__ = 'grainier'
 
 import graph_tool.all as gt
-from common.graphs import SingletonGraph
-from common import config, current_time_milliseconds, redis_key_template
+from common.graphs import GraphReference, SingletonGraph
+from common import REDIS_POOL, current_time_milliseconds, redis_key_template
 from common.exceptions import VertexDoesNotExists, PropertyDoesNotExists, EdgeDoesNotExists
 import redis
 
 
-class SessionGraph(object):
+class SessionGraph(GraphReference):
     __metaclass__ = SingletonGraph
 
     def __init__(self, session, temp=True):
+        super(SessionGraph, self).__init__()
         self.session = session
         self.temp = temp
-        self.redis = redis.StrictRedis(
-            config.redis.get('host', '127.0.0.1'),
-            config.redis.get('port', '6379')
-        )
+        self.redis = redis.Redis(connection_pool=REDIS_POOL)
         try:
             self.graph = gt.load_graph("{0}_c_g.gt".format(self.session))
             self.session_start = self.graph.graph_properties["session_start"]
