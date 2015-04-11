@@ -59,3 +59,15 @@ session::{ip}||type::transport||hash::{hash}
 
 storing severity record
 session::{ip}||type::severity||hash::{hash}
+
+
+Redis in Mac
+brew install redis
+
+Refer to http://superuser.com/questions/504892/how-do-i-restart-redis-that-i-installed-with-brew
+
+/usr/local/Cellar/redis//homebrew.mxcl.redis.plist will contain details about the conf (/usr/local/etc/redis.conf)
+
+sudo redis-server /usr/local/etc/redis.conf
+
+dump.rdb on /usr/local/var/db/redis/
