@@ -9,18 +9,41 @@ import redis
 import operator
 from modeler.factors import *
 
-known_ddos_ip = []
+# ips used in attacking
+known_ddos_ip = [
+    '124.43.187.61',
+    '112.134.8.95',
+    '124.43.168.240',
+    '112.134.187.171',
+    '61.245.173.19',
+    '61.245.168.157',
+    '61.245.163.160',
+    '61.245.163.60'
+]
+
+# remove possible cloud flare ips
+ips_to_remove = [
+    '199.27.130.186',
+    '173.245.49.235',
+    '173.245.50.125',
+    '141.101.106.131'
+]
 regex = re.compile(ur'^((?!Baiduspider|Googlebot|bingbot|Pingdom|Rome Client|Sogou|AhrefsBot|WordPress|Feedfetcher|Feedly|GoogleProducer|WeSEE|ADmantX|GrapeshotCrawler|DuckDuckGo|bot|Bot|Crawler|crawler|Yahoo|MegaIndex|panscient|spider|facebookexternalhit|Mediapartners|HaosouSpider).)*$')
 r_db = redis.Redis(connection_pool=REDIS_POOL)
 keys = r_db.keys('*type::transport*')
 records = [pickle.loads(record) for record in r_db.mget(keys)]
 records_dict = {}
-# filter known bots from records
+
+# filter known bots / cloud flare anomalies from records
 for r in records:
-    if r['user_agent'] is None or re.match(regex, r['user_agent']) is not None:
-        records_dict[r['requested_time']] = TrafficRecord(record=r)
+    if r['client_ip'] not in ips_to_remove:
+        if r['user_agent'] is None or re.match(regex, r['user_agent']) is not None:
+            records_dict[r['requested_time']] = TrafficRecord(record=r)
+            pass
         pass
     pass
+
+print "{} bot requests filtered out. Remains {} requests.".format(len(records) - len(records_dict), len(records_dict))
 
 filtered_sorted_records = sorted(records_dict.items(), key=operator.itemgetter(0))
 keys = None
@@ -80,7 +103,12 @@ for ip in ip_records:
         training_data = np.array(data_record)
     pass
 
+for f_key in factors:
+    print f_key
+    pass
 
 np.save("training_data", training_data)
 # td = np.load("")
 print "done."
+
+# variance reuest > 600 Precentage concecetive req > 99, req dristribution > 1000 ?????
