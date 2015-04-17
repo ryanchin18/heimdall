@@ -7,12 +7,12 @@ import redis
 
 
 class SeverityRecord(dict):
-    def __init__(self, session, value, is_ddos):
+    def __init__(self, session, probability, is_ddos):
         self.key = redis_key_template.format(session, "severity", None)
         self.redis = redis.Redis(connection_pool=REDIS_POOL)
         severity = {
             "session": session,
-            "value": value,
+            "probability": probability,
             "is_ddos": is_ddos
         }
         super(SeverityRecord, self).__init__(**severity)
@@ -24,8 +24,8 @@ class SeverityRecord(dict):
         self.redis.expire(self.key, config.get('session_length', 1 * 60 * 60))
         pass
 
-    def update_severity(self, value, is_ddos):
-        self['severity'] = value
+    def update_severity(self, probability, is_ddos):
+        self['probability'] = probability
         self['is_ddos'] = is_ddos
         pass
 

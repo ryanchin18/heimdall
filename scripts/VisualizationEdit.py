@@ -99,7 +99,7 @@ def vizualization():
     p_2 = clf_2.predict_proba(t_x)
     print("p_2: ", p_2)
 
-    # bsmote 1 data
+    # bsmote data
     clf_3 = RandomForestClassifier(n_estimators=100, n_jobs=2)
     clf_3.fit(bsx1, bsy1)
     p_3 = clf_3.predict_proba(t_x)

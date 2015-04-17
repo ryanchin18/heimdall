@@ -18,20 +18,20 @@ class Analyser(object):
     def __init__(self):
         self.redis = redis.Redis(connection_pool=REDIS_POOL)
         self._rf_clf = RFClassifier()
+        self._rf_clf.load(balanced_type='os')
         pass
 
     def analyse(self, session, record_key):
         serialized_record = self.redis.get(record_key)
         record = pickle.loads(serialized_record)
-        prob, cls = self._rf_clf.analyse(record)
-        # analyse it using rf_classifier
-        # update severity with returned values
-        self.update_severity(session, prob, cls == 1)
+        ddos_prob, is_ddos = self._rf_clf.analyse(record)
+        self.update_severity(session, ddos_prob, is_ddos)
         self.remove_redis_record(record_key)
         pass
 
-    def update_severity(self, session, value, is_ddos):
-        severity = SeverityRecord(session, value, is_ddos)
+    def update_severity(self, session, probability, is_ddos):
+        severity = SeverityRecord(session, probability, is_ddos)
+        print severity
         severity.save()
         severity = None
         pass
