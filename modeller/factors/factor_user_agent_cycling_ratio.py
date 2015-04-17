@@ -1,5 +1,5 @@
 import operator
-from modeler.factors import BaseFactor
+from modeller.factors import BaseFactor
 
 
 class FactorUserAgentCyclingRatio(BaseFactor):
@@ -17,7 +17,7 @@ class FactorUserAgentCyclingRatio(BaseFactor):
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
-        self._FACTOR_INDEX = 11
+        self._FACTOR_INDEX = 10
         self._FACTOR_KEY = "FactorUserAgentCyclingRatio"
         pass
 

@@ -1,5 +1,5 @@
 import operator
-from modeler.factors import BaseFactor
+from modeller.factors import BaseFactor
 
 
 class FactorVarianceRequestInterval(BaseFactor):
@@ -11,7 +11,7 @@ class FactorVarianceRequestInterval(BaseFactor):
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
-        self._FACTOR_INDEX = 12
+        self._FACTOR_INDEX = 11
         self._FACTOR_KEY = "FactorVarianceRequestInterval"
         pass
 

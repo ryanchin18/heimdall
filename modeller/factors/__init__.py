@@ -1,6 +1,4 @@
 __author__ = 'grainier'
-# __all__ = []
-
 from base_factor import BaseFactor
 from factor_average_request_interval import FactorAverageRequestInterval
 from factor_average_response_time import FactorAverageResponseTime
@@ -11,6 +9,5 @@ from factor_request_distribution import FactorRequestDistribution
 from factor_request_size_average import FactorRequestSizeAverage
 from factor_resource_type_ratio import FactorResourceTypeRatio
 from factor_response_size_average import FactorResponseSizeAverage
-# from factor_traversal_possibility import FactorTraversalPossibility
 from factor_user_agent_cycling_ratio import FactorUserAgentCyclingRatio
 from factor_variance_request_interval import FactorVarianceRequestInterval

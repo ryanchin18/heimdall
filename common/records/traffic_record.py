@@ -28,10 +28,6 @@ class TrafficRecord(dict):
         self.add_missing_attributes()
         pass
 
-    def populate(self):
-
-        pass
-
     def add_missing_attributes(self):
         url = urlparse(self['request_uri'])
         # strip off query parameters

@@ -47,7 +47,7 @@ class SessionGraph(GraphReference):
         pass
 
     def save(self):
-        self.graph.save("{0}_c_g.gt".format(self.session))
+        self.graph.save("generated/{0}_c_g.gt".format(self.session))
         pass
 
     def add_edge(self, source_vertex, target_vertex, edge_properties=None):
@@ -106,7 +106,7 @@ class SessionGraph(GraphReference):
             self.graph.graph_properties[property_key] = prop
             self.graph.graph_properties[property_key] = property_value
             pass
-        self.save()
+        # self.save()   # do not save here, it will add i/o overhead
         pass
 
     def get_graph_property(self, property_key):
@@ -134,7 +134,7 @@ class SessionGraph(GraphReference):
         if v:
             self.graph.vertex_properties[property_key] = self.graph.new_vertex_property(property_type)
             self.graph.vertex_properties[property_key][v] = property_value
-            self.save()
+            # self.save()   # do not save here, it will add i/o overhead
         else:
             raise VertexDoesNotExists()
         pass
@@ -194,7 +194,7 @@ class SessionGraph(GraphReference):
         if e:
             self.graph.edge_properties[property_key] = self.graph.new_edge_property(property_type)
             self.graph.edge_properties[property_key][e] = property_value
-            self.save()
+            # self.save()   # do not save here, it will add i/o overhead
             pass
         else:
             raise EdgeDoesNotExists()
@@ -204,6 +204,10 @@ class SessionGraph(GraphReference):
             self, property_key, edge=None, source_vertex=None, destination_vertex=None,
             source_vertex_id=None, destination_vertex_id=None):
         # TODO : Implement this
+        pass
+
+    def remove_parallel_edges(self):
+        gt.remove_parallel_edges(self.graph)
         pass
 
     def get_vertex(self, vertex_id):
@@ -338,7 +342,7 @@ class SessionGraph(GraphReference):
             vertex_font_size=8,
             edge_pen_width=1,
             output_size=(2048, 2048),
-            output="{0}_c_g.png".format(self.session)
+            output="generated/{0}_c_g.png".format(self.session)
         )
         pass
 

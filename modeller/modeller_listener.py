@@ -2,13 +2,13 @@
 
 """
 from common.listeners import RedisListener
-from analyser import Analyser
+from modeller import Modeller
 
 
-class AnalyserListener(RedisListener):
+class ModellerListener(RedisListener):
     def __init__(self, *args, **kwargs):
-        super(AnalyserListener, self).__init__(*args, **kwargs)
-        self.analyser = Analyser()
+        super(ModellerListener, self).__init__(*args, **kwargs)
+        self.modeller = Modeller()
         pass
 
     def process(self, key, channel, command):
@@ -20,8 +20,8 @@ class AnalyserListener(RedisListener):
                 hash_val = hash_val.split('::')[1]
 
                 command = command.lower()
-                if type_val == 'analyse' and command == 'set':
-                    self.analyser.analyse(session, key)
+                if type_val == 'transport' and command == 'set':
+                    self.modeller.model(key, session)
                 else:
                     # ignore the event
                     pass

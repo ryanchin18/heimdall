@@ -1,4 +1,4 @@
-from modeler.factors import BaseFactor
+from modeller.factors import BaseFactor
 import graph_tool.all as gt
 
 

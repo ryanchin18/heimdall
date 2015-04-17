@@ -3,11 +3,11 @@ import numpy as np
 from common import REDIS_POOL
 from common.graphs.session_graph import SessionGraph
 from common.records import TrafficRecord
-from modeler import ModelerListener
+from modeller.modeller import Modeller
 import cPickle as pickle
 import redis
 import operator
-from modeler.factors import *
+from modeller.factors import *
 
 # ips used in attacking
 known_ddos_ip = [
@@ -21,14 +21,19 @@ known_ddos_ip = [
     '61.245.163.60'
 ]
 
-# remove possible cloud flare ips
+# remove other possible data anomalies (cloudflare in this case)
 ips_to_remove = [
     '199.27.130.186',
     '173.245.49.235',
     '173.245.50.125',
     '141.101.106.131'
 ]
-regex = re.compile(ur'^((?!Baiduspider|Googlebot|bingbot|Pingdom|Rome Client|Sogou|AhrefsBot|WordPress|Feedfetcher|Feedly|GoogleProducer|WeSEE|ADmantX|GrapeshotCrawler|DuckDuckGo|bot|Bot|Crawler|crawler|Yahoo|MegaIndex|panscient|spider|facebookexternalhit|Mediapartners|HaosouSpider).)*$')
+
+# regex to identify bots
+regex = re.compile(
+    ur'^((?!Baiduspider|Googlebot|bingbot|Pingdom|Rome Client|Sogou|AhrefsBot|WordPress|Feedfetcher|Feedly|GoogleProducer|WeSEE|ADmantX|GrapeshotCrawler|DuckDuckGo|bot|Bot|Crawler|crawler|Yahoo|MegaIndex|panscient|spider|facebookexternalhit|Mediapartners|HaosouSpider).)*$')
+
+# redis connection
 r_db = redis.Redis(connection_pool=REDIS_POOL)
 keys = r_db.keys('*type::transport*')
 records = [pickle.loads(record) for record in r_db.mget(keys)]
@@ -43,33 +48,39 @@ for r in records:
         pass
     pass
 
-print "{} bot requests filtered out. Remains {} requests.".format(len(records) - len(records_dict), len(records_dict))
+print "{} bot requests filtered out. Remains {} requests.".format(
+    len(records) - len(records_dict), len(records_dict)
+)
 
+# sort by request time
 filtered_sorted_records = sorted(records_dict.items(), key=operator.itemgetter(0))
 keys = None
 records = None
 records_dict = None
 
 # requires a ModelListener to model captured records
-# initialize the ModelerListener but do not listen to events
-ml = ModelerListener(connection_pool=REDIS_POOL)
+ml = Modeller()
 ip_records = {}
 counter = 0
 
-# model and calculate values
+# model the traffic and calculate values
 for key, record in filtered_sorted_records:
-    ml.process_command(None, 'set', record['client_ip'], 'transport',
-                       None, traffic_record=record,
-                       notify_analyser=False, bulk_restore=True)
-
+    ml.model(
+        None, record['client_ip'],
+        traffic_record=record,
+        persist_for_analysing=False
+    )
     if record['client_ip'] in ip_records:
         ip_records[record['client_ip']] += 1
     else:
         ip_records[record['client_ip']] = 1
     counter += 1
-    print "{} of {} records analyzed".format(counter, len(filtered_sorted_records))
+    print "{} of {} records analyzed".format(
+        counter, len(filtered_sorted_records)
+    )
     pass
 
+# sort factors by index
 factors = {}
 for Factor in BaseFactor.__subclasses__():
     factor = Factor(None, None, None)
@@ -79,13 +90,13 @@ factors = sorted(factors.items(), key=operator.itemgetter(1))
 
 training_data = None
 for ip in ip_records:
-    data_record = [ip]
+    data_record = []
     sg = SessionGraph(ip)
 
-    if sg.get_graph_property("FactorBrowsingDepth") == 1 and sg.get_graph_property("FactorPercentageConsecutiveRequests") > 90:
-        print "============================="
-        print "ip : {}, requests : {}, ua : {}".format(ip, len(sg.get_graph_property("request_sequence")), sg.get_graph_property("user_agents"))
-        print "============================="
+    if sg.get_graph_property("FactorBrowsingDepth") == 1 and sg.get_graph_property(
+            "FactorPercentageConsecutiveRequests") > 90:
+        print "ip : {}, requests : {}, ua : {}".format(ip, len(sg.get_graph_property("request_sequence")),
+                                                       sg.get_graph_property("user_agents"))
 
     for f, f_key in factors:
         data_record.append(sg.get_graph_property(f_key))
@@ -108,7 +119,4 @@ for f_key in factors:
     pass
 
 np.save("training_data", training_data)
-# td = np.load("")
-print "done."
-
-# variance reuest > 600 Precentage concecetive req > 99, req dristribution > 1000 ?????
+print "done"

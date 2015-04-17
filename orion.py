@@ -1,7 +1,7 @@
 from twisted.internet import reactor
 from twisted.python import log
 from interceptor import ProxyFactory
-from modeler import ModelerListener
+from modeller import ModellerListener
 from analyser import AnalyserListener
 from common import REDIS_POOL, config
 import sys
@@ -10,8 +10,8 @@ import sys
 def run():
     log.startLogging(sys.stdout)
 
-    # initialize the ModelerListener and listen on a separate thread
-    ml = ModelerListener(connection_pool=REDIS_POOL)
+    # initialize the ModellerListener and listen on a separate thread
+    ml = ModellerListener(connection_pool=REDIS_POOL)
     ml.listen()
 
     # initialize the AnalyserListener and listen on a separate thread
