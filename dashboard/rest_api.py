@@ -1,14 +1,21 @@
 # From : http://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
-from common import REDIS_POOL, config, redis_key_template
+from common import REDIS_POOL, config, root_dir
 from common.records import SeverityRecord
 from common.graphs import SessionGraph
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_file, render_template
 from modeller.factors import *
 import cPickle as pickle
 import redis
+import os
 
 r_db = redis.Redis(connection_pool=REDIS_POOL)
-app = Flask(__name__)
+app = Flask('OrionDashboard')
+
+# index page
+@app.route('/')
+def index():
+    return render_template('index.html')
+    pass
 
 # get traffic summary
 @app.route('/orion/api/v1.0/traffic_summary', methods=['GET'])
@@ -26,7 +33,7 @@ def get_traffic_summary():
 
 
 # get activity of a ip
-@app.route('/orion/api/v1.0/ip_summary/<string:ip>', methods=['GET'])
+@app.route('/orion/api/v1.0/ip_summary/<ip>', methods=['GET'])
 def get_ip_summary(ip):
     sg = SessionGraph(ip)
     sr = SeverityRecord(ip)
@@ -49,7 +56,7 @@ def get_ip_summary(ip):
 
 
 # ban IP
-@app.route('/todo/api/v1.0/ban_ip/<string:ip>', methods=['PUT'])
+@app.route('/orion/api/v1.0/ban_ip/<ip>', methods=['PUT'])
 def ban_ip(ip):
     sr = SeverityRecord(ip)
     sr.ban()
@@ -60,7 +67,7 @@ def ban_ip(ip):
 
 
 # un ban IP
-@app.route('/todo/api/v1.0/unban_ip/<string:ip>', methods=['PUT'])
+@app.route('/orion/api/v1.0/unban_ip/<ip>', methods=['PUT'])
 def unban_ip(ip):
     sr = SeverityRecord(ip)
     sr.unban()
@@ -71,13 +78,12 @@ def unban_ip(ip):
 
 
 # get request graph
-@app.route('/todo/api/v1.0/request_graph/<string:ip>', methods=['GET'])
+@app.route('/orion/api/v1.0/request_graph/<ip>', methods=['GET'])
 def get_request_graph(ip):
-    return jsonify({
-        'status': 'success',
-        'code': 200,
-        # 'data': sessions
-    }), 200
+    sg = SessionGraph(ip)
+    sg.print_graph()
+    path = os.path.join(root_dir, "generated", "graphs", "{0}_c_g.png".format(ip))
+    return send_file(path, mimetype='image/png')
 
 
 if __name__ == '__main__':
