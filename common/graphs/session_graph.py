@@ -2,21 +2,22 @@ __author__ = 'grainier'
 
 import graph_tool.all as gt
 from common.graphs import GraphReference, SingletonGraph
-from common import REDIS_POOL, current_time_milliseconds, redis_key_template
+from common import REDIS_POOL, current_time_milliseconds, redis_key_template, root_dir
 from common.exceptions import VertexDoesNotExists, PropertyDoesNotExists, EdgeDoesNotExists
 import redis
+import os
 
 
 class SessionGraph(GraphReference):
     __metaclass__ = SingletonGraph
 
-    def __init__(self, session, temp=True):
+    def __init__(self, session):
         super(SessionGraph, self).__init__()
         self.session = session
-        self.temp = temp
         self.redis = redis.Redis(connection_pool=REDIS_POOL)
+        self.path = os.path.join(root_dir, "generated", "graphs")
         try:
-            self.graph = gt.load_graph("{0}_c_g.gt".format(self.session))
+            self.graph = gt.load_graph(os.path.join(self.path, "{0}_c_g.gt".format(self.session)))
             self.session_start = self.graph.graph_properties["session_start"]
             pass
         except Exception:
@@ -47,7 +48,7 @@ class SessionGraph(GraphReference):
         pass
 
     def save(self):
-        self.graph.save("generated/{0}_c_g.gt".format(self.session))
+        self.graph.save(os.path.join(self.path, "{0}_c_g.gt".format(self.session)))
         pass
 
     def add_edge(self, source_vertex, target_vertex, edge_properties=None):
@@ -342,7 +343,7 @@ class SessionGraph(GraphReference):
             vertex_font_size=8,
             edge_pen_width=1,
             output_size=(2048, 2048),
-            output="generated/{0}_c_g.png".format(self.session)
+            output=os.path.join(self.path, "{0}_c_g.png".format(self.session))
         )
         pass
 

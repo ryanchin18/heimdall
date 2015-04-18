@@ -10,6 +10,8 @@ import redis
 
 conf_dir = os.path.join(os.path.dirname(__file__), '../conf')
 
+root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+
 # load the server.conf file
 config = Config(file('%s/server.conf' % conf_dir))
 

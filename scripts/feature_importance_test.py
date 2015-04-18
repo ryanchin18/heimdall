@@ -2,7 +2,9 @@ from __future__ import division
 from __future__ import print_function
 
 import matplotlib
+from common import root_dir
 import matplotlib.pyplot as plt
+import os
 
 s = {
   "lines.linewidth": 2.0,
@@ -44,10 +46,12 @@ s = {
   "figure.subplot.bottom"  : 0.07
 }
 
-def vizualization():
 
+def vizualization():
     import numpy as np
-    td = np.load("/home/grainier/GitProjects/orion-ids/tools/training_sets/training_data.npy")
+
+    path = os.path.join(root_dir, "generated")
+    td = np.load(os.path.join(path, "training_data", "training_data.npy"))
 
     # x = td[:, :11]
     # y = td[:, 11]

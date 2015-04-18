@@ -69,4 +69,5 @@ class Modeller(object):
         # using the same key will reduce workload in analyser
         self.redis.set(redis_key_template.format(session, "analyse", None), serialized)
         pass
+
     pass

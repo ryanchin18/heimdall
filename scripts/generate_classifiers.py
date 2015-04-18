@@ -1,11 +1,14 @@
 from tools.unbalanced_dataset import OverSampler, SMOTE, bSMOTE1
 from sklearn.ensemble import RandomForestClassifier
+from common import root_dir
 import cPickle as pickle
 import numpy as np
+import os
 
 
 def generate_classifiers():
-    td = np.load("/home/grainier/GitProjects/orion-ids/scripts/training_sets/training_data.npy")
+    path = os.path.join(root_dir, "generated")
+    td = np.load(os.path.join(path, "training_data", "training_data.npy"))
 
     # whole training data set
     x = td[:, :11]
@@ -32,9 +35,9 @@ def generate_classifiers():
     bsmote_clf.fit(bsx1, bsy1)
 
     # ----------- Dump Classifiers ----------- #
-    pickle.dump(os_clf, open('os_clf.pkl', 'wb'))
-    pickle.dump(smote_clf, open('smote_clf.pkl', 'wb'))
-    pickle.dump(bsmote_clf,  open('bsmote_clf.pkl', 'wb'))
+    pickle.dump(os_clf, open(os.path.join(path, "classifiers", 'os_clf.pkl'), 'wb'))
+    pickle.dump(smote_clf, open(os.path.join(path, "classifiers", 'smote_clf.pkl'), 'wb'))
+    pickle.dump(bsmote_clf,  open(os.path.join(path, "classifiers", 'bsmote_clf.pkl'), 'wb'))
 
 if __name__ == '__main__':
     generate_classifiers()

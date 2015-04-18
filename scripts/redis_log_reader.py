@@ -1,13 +1,15 @@
-import re
-import numpy as np
-from common import REDIS_POOL
 from common.graphs.session_graph import SessionGraph
 from common.records import TrafficRecord
 from modeller.modeller import Modeller
-import cPickle as pickle
-import redis
-import operator
 from modeller.factors import *
+from common import REDIS_POOL
+from common import root_dir
+import cPickle as pickle
+import numpy as np
+import operator
+import redis
+import re
+import os
 
 # ips used in attacking
 known_ddos_ip = [
@@ -118,5 +120,6 @@ for f_key in factors:
     print f_key
     pass
 
-np.save("training_data", training_data)
+path = os.path.join(root_dir, "generated", "training_data", "training_data.npy")
+np.save(path, training_data)
 print "done"

@@ -1,7 +1,9 @@
 # From : http://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
 from common import REDIS_POOL, config, redis_key_template
 from common.records import SeverityRecord
+from common.graphs import SessionGraph
 from flask import Flask, jsonify
+from modeller.factors import *
 import cPickle as pickle
 import redis
 
@@ -26,12 +28,23 @@ def get_traffic_summary():
 # get activity of a ip
 @app.route('/orion/api/v1.0/ip_summary/<string:ip>', methods=['GET'])
 def get_ip_summary(ip):
+    sg = SessionGraph(ip)
     sr = SeverityRecord(ip)
-    sr.ban()
+
+    factors = {}
+    for Factor in BaseFactor.__subclasses__():
+        factor = Factor(None, None, None)
+        key = factor._FACTOR_KEY
+        factors[key] = sg.get_graph_property(key)
+        pass
+
+    sr['factors'] = factors
+    sr['request_graph'] = "generated/{0}_c_g.png".format(ip)
+
     return jsonify({
         'status': 'success',
         'code': 200,
-        # 'data': sessions
+        'data': sr
     }), 200
 
 
