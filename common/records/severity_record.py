@@ -31,7 +31,7 @@ class SeverityRecord(dict):
         self.redis.set(self.key, serialized)
         if not self['is_ban']:
             # if the record is not ban, remove session record after X minuets
-            self.redis.expire(self.key, config.get('session_length', 1 * 60 * 5))
+            self.redis.expire(self.key, config.get('session_length', 1 * 60 * 60))
         pass
 
     def ban(self):
