@@ -6,7 +6,6 @@ from common import REDIS_POOL
 from factors import *
 import cPickle as pickle
 import numpy as np
-import hashlib
 import operator
 import redis
 
@@ -60,12 +59,14 @@ class Modeller(object):
             record = np.array(factor_values)
             self.persist_record(session, record)
             traffic_record.remove_redis_record()
-            sg.print_graph()
+            # sg.print_graph()
         pass
 
     def persist_record(self, session, record):
         serialized = pickle.dumps(record)
-        md5_sum = hashlib.md5(serialized).hexdigest()
-        self.redis.set(redis_key_template.format(session, "analyse", md5_sum), serialized)
+        # md5_sum = hashlib.md5(serialized).hexdigest()
+        # self.redis.set(redis_key_template.format(session, "analyse", md5_sum), serialized)
+        # using the same key will reduce workload in analyser
+        self.redis.set(redis_key_template.format(session, "analyse", None), serialized)
         pass
     pass

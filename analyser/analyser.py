@@ -26,17 +26,23 @@ class Analyser(object):
         record = pickle.loads(serialized_record)
         ddos_prob, is_ddos = self._rf_clf.analyse(record)
         self.update_severity(session, ddos_prob, is_ddos)
-        self.remove_redis_record(record_key)
         pass
 
     def update_severity(self, session, probability, is_ddos):
-        severity = SeverityRecord(session, probability, is_ddos)
+        severity = SeverityRecord(session, probability=probability, is_ddos=is_ddos)
+        if probability is not None or is_ddos is not None:
+            severity.save()
         print severity
-        severity.save()
         severity = None
         pass
 
     def remove_redis_record(self, record_key):
+        """
+        IMPORTANT : DO NOT USE THIS, SINCE IT
+        MIGHT BREAK NEW PROCESSING QUEUE
+        :param record_key:
+        :return:
+        """
         self.redis.delete(record_key)
         pass
     pass

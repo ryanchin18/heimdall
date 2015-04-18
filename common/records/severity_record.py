@@ -24,11 +24,9 @@ class SeverityRecord(dict):
         severity["is_ddos"] = is_ddos if is_ddos is not None else severity["is_ddos"]
         severity["is_ban"] = is_ban if is_ban is not None else severity["is_ban"]
         super(SeverityRecord, self).__init__(**severity)
-        if probability is not None or is_ddos is not None or is_ban is not None:
-            self._save()
         pass
 
-    def _save(self):
+    def save(self):
         serialized = pickle.dumps(dict(self))
         self.redis.set(self.key, serialized)
         if not self['is_ban']:
@@ -38,12 +36,12 @@ class SeverityRecord(dict):
 
     def ban(self):
         self['is_ban'] = True
-        self._save()
+        self.save()
         pass
 
     def unban(self):
         self['is_ban'] = False
-        self._save()
+        self.save()
         pass
 
     def is_ban(self):

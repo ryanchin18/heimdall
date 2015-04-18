@@ -21,7 +21,11 @@ class ModellerListener(RedisListener):
 
                 command = command.lower()
                 if type_val == 'transport' and command == 'set':
-                    self.modeller.model(key, session)
+                    try:
+                        self.modeller.model(key, session)
+                    except Exception, e:
+                        print e
+                        pass
                 else:
                     # ignore the event
                     pass
