@@ -6,6 +6,7 @@ from twisted.web import http
 from twisted.internet import reactor, protocol
 from twisted.python import log
 from common import REDIS_POOL, config, current_time_milliseconds, redis_key_template
+from common.records import SeverityRecord
 from urlparse import urlparse
 import cPickle as pickle
 import hashlib
@@ -224,27 +225,26 @@ class ProxyRequest(http.Request):
         pass
 
     def process(self):
-        # TODO: fix this  ban can happen here
-        # if self.is_ban():
-        #     log.msg("DDoS attacker detected, Sending status code 400")
-        #     self.setResponseCode(400)
-        #     self.finish()
-        #     return
-
-        host = self.getHeader('host')
-        if not host:
-            log.err("No host header given")
+        if self.is_ban():
+            log.msg("Banned IP detected, Sending status code 400")
             self.setResponseCode(400)
             self.finish()
             return
 
-        port = 80
-        if ':' in host:
-            host, port = host.split(':')
-            port = int(port)
-            pass
-
-        self.setHost(host, port)
+        # host = self.getHeader('host')
+        # if not host:
+        #     log.err("No host header given")
+        #     self.setResponseCode(400)
+        #     self.finish()
+        #     return
+        #
+        # port = 80
+        # if ':' in host:
+        #     host, port = host.split(':')
+        #     port = int(port)
+        #     pass
+        #
+        # self.setHost(host, port)
 
         self.content.seek(0, 0)
         postData = self.content.read()
@@ -267,11 +267,9 @@ class ProxyRequest(http.Request):
         return data
 
     def is_ban(self):
-        ip = self.originalRequest.getClientIP()
-        # sr = SeverityRecord(ip)
-        # return sr.get_level() > 5
-        return False
-        pass
+        session = self.getClientIP()
+        sr = SeverityRecord(session)
+        return sr.is_ban()
 
     pass
 
