@@ -28,7 +28,7 @@ class RFClassifier(object):
         # [0, 0] represents normal, [0, 1] represents DDoS
         analysis = self._clf.predict_proba(record)
         probability = analysis[0, 1]
-        is_ddos = probability >= .5
+        is_ddos = True if probability >= 0.5 else False
         return probability, is_ddos
         pass
 
