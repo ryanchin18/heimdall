@@ -44,6 +44,7 @@ class Modeller(object):
             factor = Factor(session, sg, traffic_record)
             factors[factor._FACTOR_INDEX] = factor._FACTOR_KEY
             factor.compute()
+            factor = None
             pass
 
         # after all the calculations, graph should get saved
@@ -51,7 +52,7 @@ class Modeller(object):
 
         if persist_for_analysing:
             # persisting a record will notify the analyser to analyse that record
-            factors = sorted(factors.items(), key=operator.itemgetter(1))
+            factors = sorted(factors.items(), key=operator.itemgetter(0))
             factor_values = []
             for f, f_key in factors:
                 factor_values.append(sg.get_graph_property(f_key))

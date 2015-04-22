@@ -8,8 +8,8 @@ class FactorRequestDistribution(BaseFactor):
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
-        self._FACTOR_INDEX = 6
-        self._FACTOR_KEY = "FactorRequestDistribution"
+        self._FACTOR_INDEX = 5
+        self._FACTOR_KEY = "RequestDistribution"
         pass
 
     def compute(self):

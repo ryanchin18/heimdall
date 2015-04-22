@@ -3,6 +3,7 @@ from sklearn.ensemble import RandomForestClassifier
 from common import root_dir
 import cPickle as pickle
 import numpy as np
+import time
 import os
 
 
@@ -11,8 +12,9 @@ def generate_classifiers():
     td = np.load(os.path.join(path, "training_data", "training_data.npy"))
 
     # whole training data set
-    x = td[:, :11]
-    y = td[:, 11]
+    rec_len = len(td[:, :][0]) - 1  # in index (starting from 0)
+    x = td[:, :rec_len]
+    y = td[:, rec_len]
 
     # ----------- Fix Class Imbalance ----------- #
     OS = OverSampler(random_state=1)
@@ -35,9 +37,9 @@ def generate_classifiers():
     bsmote_clf.fit(bsx1, bsy1)
 
     # ----------- Dump Classifiers ----------- #
-    pickle.dump(os_clf, open(os.path.join(path, "classifiers", 'os_clf.pkl'), 'wb'))
-    pickle.dump(smote_clf, open(os.path.join(path, "classifiers", 'smote_clf.pkl'), 'wb'))
-    pickle.dump(bsmote_clf,  open(os.path.join(path, "classifiers", 'bsmote_clf.pkl'), 'wb'))
+    pickle.dump(os_clf, open(os.path.join(path, "classifiers", 'os_clf_{}.pkl'.format(time.strftime("%Y_%m_%d_%H:%M"))), 'wb'))
+    pickle.dump(smote_clf, open(os.path.join(path, "classifiers", 'smote_clf_{}.pkl'.format(time.strftime("%Y_%m_%d_%H:%M"))), 'wb'))
+    pickle.dump(bsmote_clf,  open(os.path.join(path, "classifiers", 'bsmote_clf_{}.pkl'.format(time.strftime("%Y_%m_%d_%H:%M"))), 'wb'))
 
 if __name__ == '__main__':
     generate_classifiers()

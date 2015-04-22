@@ -7,12 +7,12 @@ class FactorAverageRequestInterval(BaseFactor):
     between two requests per session. Therefore, this factor value will represent the
     frequency with which a requester attempts to access a given resource (webpage,
     image, style sheet, etc...) of the application. It takes into account the requests as whole
-    (Per Graph) and as a single request (Per Node).
+    (Per Graph).
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
-        self._FACTOR_INDEX = 1
-        self._FACTOR_KEY = "FactorAverageRequestInterval"
+        self._FACTOR_INDEX = 0
+        self._FACTOR_KEY = "AverageRequestInterval"
         pass
 
     def compute(self):

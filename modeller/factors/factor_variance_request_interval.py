@@ -12,7 +12,7 @@ class FactorVarianceRequestInterval(BaseFactor):
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
         self._FACTOR_INDEX = 11
-        self._FACTOR_KEY = "FactorVarianceRequestInterval"
+        self._FACTOR_KEY = "VarianceRequestInterval"
         pass
 
     def compute(self):
@@ -29,9 +29,6 @@ class FactorVarianceRequestInterval(BaseFactor):
             Variance Request Interval (VRI) = [i=0; i=NI]Sigma(|NRPI{i} - ARPI|) / NI
 
         Possible Analysis:
-            If the calculated Request Distribution is equals to 0,
-            that means all the requests originated from the client
-            went to same set of resources.
 
         """
         request_intervals = sorted(

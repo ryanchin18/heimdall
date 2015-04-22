@@ -9,8 +9,8 @@ class FactorPercentageConsecutiveRequests(BaseFactor):
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
-        self._FACTOR_INDEX = 5
-        self._FACTOR_KEY = "FactorPercentageConsecutiveRequests"
+        self._FACTOR_INDEX = 4
+        self._FACTOR_KEY = "PercentageConsecutiveRequests"
         pass
 
     def compute(self):

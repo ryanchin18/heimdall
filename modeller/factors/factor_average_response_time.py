@@ -10,8 +10,8 @@ class FactorAverageResponseTime(BaseFactor):
     """
     def __init__(self, session, session_graph, traffic_record):
         BaseFactor.__init__(self, session, session_graph, traffic_record)
-        self._FACTOR_INDEX = 2
-        self._FACTOR_KEY = "FactorAverageResponseTime"
+        self._FACTOR_INDEX = 1
+        self._FACTOR_KEY = "AverageResponseTime"
         pass
 
     def compute(self):

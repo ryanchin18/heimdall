@@ -8,6 +8,7 @@ import cPickle as pickle
 import numpy as np
 import operator
 import redis
+import time
 import re
 import os
 
@@ -87,8 +88,9 @@ factors = {}
 for Factor in BaseFactor.__subclasses__():
     factor = Factor(None, None, None)
     factors[factor._FACTOR_INDEX] = factor._FACTOR_KEY
+    factor = None
     pass
-factors = sorted(factors.items(), key=operator.itemgetter(1))
+factors = sorted(factors.items(), key=operator.itemgetter(0))
 
 training_data = None
 for ip in ip_records:
@@ -120,6 +122,11 @@ for f_key in factors:
     print f_key
     pass
 
-path = os.path.join(root_dir, "generated", "training_data", "training_data.npy")
+path = os.path.join(
+    root_dir,
+    "generated",
+    "training_data",
+    "training_data_{0}.npy".format(time.strftime("%Y_%m_%d_%H:%M"))
+)
 np.save(path, training_data)
 print "done"
