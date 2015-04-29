@@ -66,10 +66,8 @@ orion.unban_ip = function (ip, callback) {
 
 /** --------- Event Bindings  --------- */
 $( document ).ready(function(){
-
+    // Initialize Toggle Switches
+    $("input[type=\"checkbox\"], input[type=\"radio\"]").not("[data-switch-no-init]").bootstrapSwitch();
+    // $("#switch-" + type).bootstrapSwitch(type, $(this).data("switch-value"));
 });
 
-// Initialize Toggle Switches
-$("input[type=\"checkbox\"], input[type=\"radio\"]").not("[data-switch-no-init]").bootstrapSwitch();
-
-$("#switch-" + type).bootstrapSwitch(type, $(this).data("switch-value"));
