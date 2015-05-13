@@ -2,7 +2,8 @@
 from common import REDIS_POOL, config, root_dir
 from common.records import SeverityRecord
 from common.graphs import SessionGraph
-from flask import Flask, jsonify, send_file, render_template
+from flask import Flask, jsonify, send_file, render_template, make_response
+from functools import update_wrapper
 from modeller.factors import *
 import cPickle as pickle
 import redis
@@ -12,14 +13,25 @@ import re
 r_db = redis.Redis(connection_pool=REDIS_POOL)
 app = Flask('OrionDashboard')
 
+
+def nocache(f):
+    def new_func(*args, **kwargs):
+        resp = make_response(f(*args, **kwargs))
+        resp.cache_control.no_cache = True
+        return resp
+    return update_wrapper(new_func, f)
+
+
 # index page
 @app.route('/')
 def index():
     return render_template('index.html')
     pass
 
+
 # get traffic summary
 @app.route('/orion/api/v1.0/traffic_summary', methods=['GET'])
+@nocache
 def get_traffic_summary():
     try:
         keys = r_db.keys('*type::severity*')
@@ -35,6 +47,7 @@ def get_traffic_summary():
 
 # get activity of a ip
 @app.route('/orion/api/v1.0/ip_summary/<ip>', methods=['GET'])
+@nocache
 def get_ip_summary(ip):
     sg = SessionGraph(ip)
     sr = SeverityRecord(ip)
@@ -62,6 +75,7 @@ def get_ip_summary(ip):
 
 # ban IP
 @app.route('/orion/api/v1.0/ban_ip/<ip>', methods=['PUT'])
+@nocache
 def ban_ip(ip):
     sr = SeverityRecord(ip)
     sr.ban()
@@ -73,6 +87,7 @@ def ban_ip(ip):
 
 # un ban IP
 @app.route('/orion/api/v1.0/unban_ip/<ip>', methods=['PUT'])
+@nocache
 def unban_ip(ip):
     sr = SeverityRecord(ip)
     sr.unban()
@@ -84,6 +99,7 @@ def unban_ip(ip):
 
 # get request graph
 @app.route('/orion/api/v1.0/request_graph/<ip>', methods=['GET'])
+@nocache
 def get_request_graph(ip):
     sg = SessionGraph(ip)
     sg.print_graph()
