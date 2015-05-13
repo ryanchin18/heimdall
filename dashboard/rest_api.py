@@ -32,41 +32,6 @@ def get_traffic_summary():
         'data': sessions
     }), 200
 
-# dummy traffic summary
-@app.route('/orion/api/v1.0/dummy_summary', methods=['GET'])
-def get_dummy_summary():
-    sessions = [
-        {
-            "is_ban": False,
-            "is_ddos": False,
-            "probability": 0.0,
-            "session": "192.168.1.101"
-        },
-        {
-            "is_ban": False,
-            "is_ddos": False,
-            "probability": 12.0,
-            "session": "192.168.1.102"
-        },
-        {
-            "is_ban": True,
-            "is_ddos": False,
-            "probability": 35.0,
-            "session": "192.168.1.103"
-        },
-        {
-            "is_ban": True,
-            "is_ddos": True,
-            "probability": 75.0,
-            "session": "192.168.1.104"
-        }
-    ]
-    return jsonify({
-        'status': 'success',
-        'code': 200,
-        'data': sessions
-    }), 200
-
 
 # get activity of a ip
 @app.route('/orion/api/v1.0/ip_summary/<ip>', methods=['GET'])

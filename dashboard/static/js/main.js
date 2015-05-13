@@ -90,16 +90,16 @@ var SessionSummary = function (session, is_ddos, probability, is_ban) {
                 console.log("Un-banned :" + scope.session);
             });
         } else {
-            orion.unban_ip(scope.session, function (data) {
+            orion.ban_ip(scope.session, function (data) {
                 console.log("Banned " + scope.session);
             });
         }
     };
 };
 
-var Session = function (ip) {
+var Session = function () {
     var scope = this;
-    this.session = ip;
+    this.session = ko.observable('');
     this.si = 0; // session interval
     this.request_graph = ko.observable("");
     this.is_ddos = ko.observable(false);
@@ -126,18 +126,26 @@ var Session = function (ip) {
         });
     }.bind(this);
 
+    this.trigger = ko.computed(function () {
+        // update ip summary each X seconds
+        orion.ip_summary(scope.session(), scope.update);
+        scope.si = setInterval(function () {
+            if (modal_opened) {
+                orion.ip_summary(scope.session(), scope.update);
+                console.log("IP summary updated for " + scope.session());
+            }
+        }, IP_SUMMARY_UPDATE_INTERVAL);
+        return scope.session();
+    }, this);
+
     this.clear_data = function () {
         clearInterval(this.si);
+        scope.request_graph("");
+        scope.is_ddos(false);
+        scope.probability(0);
+        scope.is_ban(false);
+        scope.factors.removeAll();
     };
-
-    // update ip summary each X seconds
-    orion.ip_summary(this.session, scope.update);
-    this.si = setInterval(function () {
-        if (modal_opened) {
-            orion.ip_summary(scope.session, scope.update);
-            console.log("IP summary updated for " + scope.session);
-        }
-    }, IP_SUMMARY_UPDATE_INTERVAL);
 };
 
 var SessionList = function () {
@@ -191,23 +199,21 @@ $(document).ready(function () {
     };
 
     // Bind Data
-    var session_modal = null;
+    var session_modal = new Session();
     var session_list = new SessionList();
+    ko.applyBindings(session_modal, document.getElementById('sessionModal'));
     ko.applyBindings(session_list, document.getElementById('sessionList'));
 
     $('#sessionModal').on('show.bs.modal', function (event) {
         modal_opened = true; // sort of acquiring a update lock
         var button = $(event.relatedTarget);
         var session = button.data('session');
-        var modal_elem = $('#sessionModal')[0];
-        session_modal = new Session(session);
-        ko.applyBindings(session_modal, modal_elem);
+        session_modal.session(session);
     });
 
     $('#sessionModal').on('hide.bs.modal', function (event) {
+        session_modal.clear_data();
         modal_opened = false;
-        var modal_elem = $('#sessionModal')[0];
-        ko.cleanNode(modal_elem);
     });
 });
 

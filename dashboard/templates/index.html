@@ -78,11 +78,11 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="sessionModalLabel" data-bind="text: 'Activity summary for ' + session"></h4>
+                    <h4 class="modal-title" id="sessionModalLabel" data-bind="text: 'Activity summary for ' + session()"></h4>
                 </div>
                 <div class="modal-body">
-                    <img class="img-responsive" data-bind="attr: { 'src':request_graph, 'alt':'Request graph for ' + session }">
-                    <p class="img-caption" data-bind="text: 'Request distribution graph for ' + session"></p>
+                    <img class="img-responsive" data-bind="attr: { 'src':request_graph, 'alt':'Request graph for ' + session() }">
+                    <p class="img-caption" data-bind="text: 'Request distribution graph for ' + session()"></p>
                     <div class="panel-body">
                         <table class="table">
                             <thead>
