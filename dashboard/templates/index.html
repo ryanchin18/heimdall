@@ -52,7 +52,7 @@
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
                                 <input type="checkbox"
-                                       data-bind="checked: is_ban, attr: { 'name': 'ban_' + session }"
+                                       data-bind="bootstrapSwitchOn: {state: is_ban, switchChange: toggle_ban }"
                                        data-on-color="warning">
                             </div>
                         </td>

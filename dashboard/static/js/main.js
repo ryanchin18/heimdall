@@ -1,12 +1,15 @@
+/** --------- Constants --------- */
+var TRAFFIC_SUMMARY_UPDATE_INTERVAL = 10000;
+var IP_SUMMARY_UPDATE_INTERVAL = 5000;
+var SERVICE_URL = "/orion/api/v1.0";
+
 /** --------- Orion API --------- */
 var orion = orion || {};
-
-orion.SERVICE_URL = "/orion/api/v1.0";
+orion.SERVICE_URL = SERVICE_URL;
 
 orion.traffic_summary = function (callback) {
     $.ajax({
-        url: orion.SERVICE_URL + "/dummy_summary",
-        // url: orion.SERVICE_URL + "/traffic_summary",
+        url: orion.SERVICE_URL + "/traffic_summary",
         crossDomain: true,
         method: 'GET',
         success: function (data) {
@@ -20,8 +23,7 @@ orion.traffic_summary = function (callback) {
 
 orion.ip_summary = function (ip, callback) {
     $.ajax({
-        url: "http://0.0.0.0:9090/orion/api/v1.0/ip_summary/192.168.1.100",
-        // url: orion.SERVICE_URL + "/ip_summary/" + ip,
+        url: orion.SERVICE_URL + "/ip_summary/" + ip,
         crossDomain: true,
         method: 'GET',
         success: function (data) {
@@ -64,34 +66,38 @@ orion.unban_ip = function (ip, callback) {
 /** --------- View Model --------- */
 var modal_opened = false;
 
-var SessionSummary = function(session, is_ddos, probability, is_ban) {
+var SessionSummary = function (session, is_ddos, probability, is_ban) {
+    var scope = this;
     this.session = session;
     this.is_ddos = ko.observable(is_ddos);
     this.probability = ko.observable(probability);
     this.is_ban = ko.observable(is_ban);
-    this.div_class = ko.pureComputed(function() {
-        if ( this.probability() >= 50 ) {
+    this.div_class = ko.pureComputed(function () {
+        if (this.probability() >= 50) {
             return "danger"
-        } else if( this.probability() >= 25 ) {
+        } else if (this.probability() >= 25) {
             return "warning"
-        } else if( this.probability() >= 1 ) {
+        } else if (this.probability() >= 1) {
             return ""
         } else {
             return "success"
         }
     }, this);
 
-    this.toggle_ban = ko.pureComputed(function() {
-        if (this.is_ban()) {
-
+    this.toggle_ban = function (event, state) {
+        if (!state) {
+            orion.unban_ip(scope.session, function (data) {
+                console.log("Un-banned :" + scope.session);
+            });
         } else {
-
+            orion.unban_ip(scope.session, function (data) {
+                console.log("Banned " + scope.session);
+            });
         }
-        return this.is_ban;
-    }, this);
+    };
 };
 
-var Session = function(ip) {
+var Session = function (ip) {
     var scope = this;
     this.session = ip;
     this.si = 0; // session interval
@@ -101,7 +107,7 @@ var Session = function(ip) {
     this.is_ban = ko.observable(false);
     this.factors = ko.observableArray([]);
 
-    this.update = function(session) {
+    this.update = function (session) {
         scope.request_graph(session.data.request_graph);
         scope.is_ddos(session.data.is_ddos);
         scope.probability(session.data.probability);
@@ -115,7 +121,7 @@ var Session = function(ip) {
         }
 
         // sort according to alphabet
-        scope.factors.sort(function(l, r) {
+        scope.factors.sort(function (l, r) {
             return l.key == r.key ? 0 : (l.key < r.key ? -1 : 1)
         });
     }.bind(this);
@@ -124,21 +130,21 @@ var Session = function(ip) {
         clearInterval(this.si);
     };
 
-    // update ip summary each 2 seconds
+    // update ip summary each X seconds
     orion.ip_summary(this.session, scope.update);
     this.si = setInterval(function () {
         if (modal_opened) {
             orion.ip_summary(scope.session, scope.update);
             console.log("IP summary updated for " + scope.session);
         }
-    }, 2000);
+    }, IP_SUMMARY_UPDATE_INTERVAL);
 };
 
 var SessionList = function () {
     var scope = this;
     this.items = ko.observableArray([]);
 
-    this.updateList = function(sessions) {
+    this.updateList = function (sessions) {
         // empty the array
         scope.items.removeAll();
 
@@ -149,30 +155,41 @@ var SessionList = function () {
         }
 
         // sort according to probability
-        scope.items.sort(function(l, r) {
+        scope.items.sort(function (l, r) {
             return l.probability == r.probability ? 0 : (l.probability < r.probability ? -1 : 1)
         });
     }.bind(this);
 
     // update traffic summary each 5 seconds
     orion.traffic_summary(scope.updateList);
-    setInterval(function() {
+    setInterval(function () {
         if (!modal_opened) {
             orion.traffic_summary(scope.updateList);
             console.log("Traffic summary updated");
         } else {
             console.log("Session info modal opened, not updating traffic summary");
         }
-    }, 5000);
+    }, TRAFFIC_SUMMARY_UPDATE_INTERVAL);
 };
 
 /** --------- Other Functions  --------- */
 
 
-
-
 /** --------- Event Bindings  --------- */
-$( document ).ready(function(){
+$(document).ready(function () {
+    // custom KO bind handler for Bootstrap-Switch
+    ko.bindingHandlers.bootstrapSwitchOn = {
+        init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+            $elem = $(element);
+            $elem.bootstrapSwitch();
+            $elem.bootstrapSwitch('state', ko.utils.unwrapObservable(valueAccessor().state())); // Set intial state
+            $elem.on('switchChange.bootstrapSwitch', function (event, state) {
+                var observable = valueAccessor();
+                observable.switchChange(event, state);
+            });
+        }
+    };
+
     // Bind Data
     var session_modal = null;
     var session_list = new SessionList();
@@ -192,10 +209,5 @@ $( document ).ready(function(){
         var modal_elem = $('#sessionModal')[0];
         ko.cleanNode(modal_elem);
     });
-
-
-    // Initialize Toggle Switches
-    $("input[type=\"checkbox\"], input[type=\"radio\"]").not("[data-switch-no-init]").bootstrapSwitch();
-    // $("#switch-" + type).bootstrapSwitch(type, $(this).data("switch-value"));
 });
 
