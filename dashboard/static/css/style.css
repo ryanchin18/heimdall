@@ -35,3 +35,11 @@ code {
 td {
     vertical-align: middle !important;
 }
+
+.img-caption {
+    font-size: 10px;
+    text-align: center;
+    color: #262626;
+    text-transform: uppercase;
+    font-weight: bold;
+}

@@ -10,6 +10,7 @@
 
     <!--    js    -->
     <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/knockout-3.3.0.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/bootstrap-switch.min.js"></script>
     <script src="/static/js/main.js"></script>
@@ -29,7 +30,7 @@
         </div>
     </div>
 
-    <div class="container">
+    <div id="sessionList" class="container">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Traffic Summary</h3>
@@ -44,126 +45,68 @@
                         <th>Session Summary</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr class="danger">
-                        <td>154.23.123.145</td>
-                        <td>
-                            100% Possibility
-                        </td>
+                    <tbody data-bind="foreach: items">
+                    <tr data-bind="css: div_class">
+                        <td data-bind="text: session"></td>
+                        <td data-bind="text: probability() + '% Possibility'"></td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
-                                <input type="checkbox" name="my-checkbox" data-on-color="warning">
+                                <input type="checkbox"
+                                       data-bind="checked: is_ban, attr: { 'name': 'ban_' + session }"
+                                       data-on-color="warning">
                             </div>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-default btn-block">View</button>
-                        </td>
-                    </tr>
-                    <tr class="danger">
-                        <td>121.14.4.111</td>
-                        <td>
-                            82% Possibility
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <input type="checkbox" name="my-checkbox" data-on-color="warning">
-                            </div>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-default btn-block">View</button>
-                        </td>
-                    </tr>
-                    <tr class="warning">
-                        <td>101.71.27.120</td>
-                        <td>
-                            47% Possibility
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <input type="checkbox" name="my-checkbox" data-on-color="warning">
-                            </div>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-default btn-block">View</button>
-                        </td>
-                    </tr>
-                    <tr class="warning">
-                        <td>58.221.85.182</td>
-                        <td>
-                            37% Possibility
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <input type="checkbox" name="my-checkbox" data-on-color="warning">
-                            </div>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-default btn-block">View</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>113.142.30.245</td>
-                        <td>
-                            24% Possibility
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <input type="checkbox" name="my-checkbox" data-on-color="warning">
-                            </div>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-default btn-block">View</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>183.207.228.51</td>
-                        <td>
-                            22% Possibility
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <input type="checkbox" name="my-checkbox" data-on-color="warning">
-                            </div>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-default btn-block">View</button>
-                        </td>
-                    </tr>
-                    <tr class="success">
-                        <td>113.142.30.245</td>
-                        <td>
-                            0% Possibility
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <input type="checkbox" name="my-checkbox" data-on-color="warning">
-                            </div>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-default btn-block">View</button>
-                        </td>
-                    </tr>
-                    <tr class="success">
-                        <td>181.48.19.214</td>
-                        <td>
-                            0% Possibility
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <input type="checkbox" name="my-checkbox" data-on-color="warning">
-                            </div>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-default btn-block">View</button>
+                            <button type="button" class="btn btn-default btn-block"
+                                    data-toggle="modal" data-target="#sessionModal"
+                                    data-bind="attr: { 'data-session':session }">
+                                View
+                            </button>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-
-
     </div>
+
+    <!-- Start of Session Modal-->
+    <div class="modal fade" id="sessionModal" tabindex="-1" role="dialog" aria-labelledby="sessionModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="sessionModalLabel" data-bind="text: 'Activity summary for ' + session"></h4>
+                </div>
+                <div class="modal-body">
+                    <img class="img-responsive" data-bind="attr: { 'src':request_graph, 'alt':'Request graph for ' + session }">
+                    <p class="img-caption" data-bind="text: 'Request distribution graph for ' + session"></p>
+                    <div class="panel-body">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Factor</th>
+                                <th>Value</th>
+                            </tr>
+                            </thead>
+                            <tbody data-bind="foreach: factors">
+                            <tr>
+                                <td data-bind="text: key"></td>
+                                <td data-bind="text: value"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Session Modal-->
 </div>
 
 <div id="footer">
