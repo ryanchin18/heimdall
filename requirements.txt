@@ -2,5 +2,5 @@ twisted
 numpy
 redis
 http://www.red-dove.com/config-0.3.9.zip
-scikit-learn
+scikit-learn==0.14.1
 flask
