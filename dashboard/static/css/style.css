@@ -43,3 +43,7 @@ td {
     text-transform: uppercase;
     font-weight: bold;
 }
+
+.modal-backdrop {
+    position: fixed !important;
+}
