@@ -1,10 +1,9 @@
 # From : http://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
-from common import REDIS_POOL, config, root_dir
+from common import REDIS_POOL, config, root_dir, redis_key_template
 from common.records import SeverityRecord
 from common.graphs import SessionGraph
 from flask import Flask, jsonify, send_file, render_template, make_response
 from functools import update_wrapper
-from modeller.factors import *
 import cPickle as pickle
 import redis
 import os
@@ -49,17 +48,18 @@ def get_traffic_summary():
 @app.route('/orion/api/v1.0/ip_summary/<ip>', methods=['GET'])
 @nocache
 def get_ip_summary(ip):
-    sg = SessionGraph(ip)
     sr = SeverityRecord(ip)
+    record = r_db.get(redis_key_template.format(ip, "factors", None))
+    if record:
+        fv_map = pickle.loads(record)
+    else:
+        fv_map = {"No Values": "No Values"}
 
     factors = []
-    for Factor in BaseFactor.__subclasses__():
-        factor = Factor(None, None, None)
-        key = factor._FACTOR_KEY
-        val = sg.get_graph_property(key)
+    for f_key, f_val in fv_map.items():
         factors.append({
-            'key': " ".join([a for a in re.split(r'([A-Z]+[a-z]*)', key) if a]),
-            'value': val
+            'key': " ".join([a for a in re.split(r'([A-Z]+[a-z]*)', f_key) if a]),
+            'value': f_val
         })
         pass
 

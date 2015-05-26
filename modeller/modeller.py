@@ -53,22 +53,29 @@ class Modeller(object):
         if persist_for_analysing:
             # persisting a record will notify the analyser to analyse that record
             factors = sorted(factors.items(), key=operator.itemgetter(0))
-            factor_values = []
-            for f, f_key in factors:
-                factor_values.append(sg.get_graph_property(f_key))
+            fv_arr = []
+            fv_map = {}
+            for f_index, f_key in factors:
+                f_val = sg.get_graph_property(f_key)
+                fv_arr.append(f_val)
+                fv_map[f_key] = f_val
                 pass
-            record = np.array(factor_values)
+            record = np.array(fv_arr)
             self.persist_record(session, record)
+            self.persist_factor_map(session, fv_map)
             traffic_record.remove_redis_record()
             # sg.print_graph()
         pass
 
     def persist_record(self, session, record):
         serialized = pickle.dumps(record)
-        # md5_sum = hashlib.md5(serialized).hexdigest()
-        # self.redis.set(redis_key_template.format(session, "analyse", md5_sum), serialized)
         # using the same key will reduce workload in analyser
         self.redis.set(redis_key_template.format(session, "analyse", None), serialized)
+        pass
+
+    def persist_factor_map(self, session, factor_map):
+        serialized = pickle.dumps(factor_map)
+        self.redis.set(redis_key_template.format(session, "factors", None), serialized)
         pass
 
     pass

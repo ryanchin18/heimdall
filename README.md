@@ -60,6 +60,9 @@ session::{ip}||type::transport||hash::{hash}
 storing severity record
 session::{ip}||type::severity||hash::{hash}
 
+storing factors value map
+session::{ip}||type::factors||hash::{hash}
+
 
 Load redis.rdb dump to the redis server
 
@@ -81,3 +84,11 @@ Refer to http://superuser.com/questions/504892/how-do-i-restart-redis-that-i-ins
 sudo redis-server /usr/local/etc/redis.conf
 
 dump.rdb on /usr/local/var/db/redis/
+
+
+Start The Orion
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 9191
+cd /opt/lampp/
+sudo ./xampp startmysql
+sudo ./xampp startapache
