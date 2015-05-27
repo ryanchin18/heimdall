@@ -1,14 +1,19 @@
+import sys
+import getopt
 from twisted.internet import reactor
 from twisted.python import log
 from interceptor import ProxyFactory
 from modeller import ModellerListener
 from analyser import AnalyserListener
 from common import REDIS_POOL, config
-import sys, getopt
 
 
 def main(argv):
     log.startLogging(sys.stdout)
+    ml = None
+    al = None
+    start_interceptor = False
+    terminate_immediately = False
 
     try:
         opts, args = getopt.getopt(argv, "imad", ["interceptor", "modeller", "analyser", "dashboard", "help"])
@@ -23,37 +28,54 @@ def main(argv):
 
         elif opt in ("-i", "--interceptor"):
             # run interceptor
+            start_interceptor = True
             pass
 
-        elif opt in ("-i", "--modeller"):
-            # run modeller
+        elif opt in ("-m", "--modeller"):
+            # initialize the ModellerListener and listen on a separate thread
+            ml = ModellerListener(connection_pool=REDIS_POOL)
+            ml.listen()
+            print 'modeller started.'
             pass
 
-        elif opt in ("-i", "--analyser"):
-            # run analyser
+        elif opt in ("-a", "--analyser"):
+            # initialize the AnalyserListener and listen on a separate thread
+            al = AnalyserListener(connection_pool=REDIS_POOL)
+            al.listen()
+            print 'analyser started.'
             pass
 
-        elif opt in ("-i", "--dashboard"):
+        elif opt in ("-d", "--dashboard"):
             # run dashboard
+            print 'please run dashboard separately.'
             pass
 
-    # initialize the ModellerListener and listen on a separate thread
-    ml = ModellerListener(connection_pool=REDIS_POOL)
-    ml.listen()
+    if start_interceptor:
+        # initialize and start the interceptor reactor
+        reactor.listenTCP(config.interceptor.get('port', 9191), ProxyFactory())
+        reactor.run()
+        terminate_immediately = True
+        pass
 
-    # initialize the AnalyserListener and listen on a separate thread
-    al = AnalyserListener(connection_pool=REDIS_POOL)
-    al.listen()
-
-    # initialize and start the interceptor reactor
-    reactor.listenTCP(config.interceptor.get('port', 9191), ProxyFactory())
-    reactor.run()
+    try:
+        while not terminate_immediately:
+            # loop to keep modeller and analyser running
+            pass
+    except KeyboardInterrupt:
+        print "stopping orion detection system"
+        pass
 
     # this is only reachable once the reactor
     # is shutdown. once the reactor receive SIGINT
     # and shutdown stop the Event Listeners too.
-    ml.stop()
-    al.stop()
+    if ml is not None:
+        ml.stop()
+        pass
+
+    if al is not None:
+        al.stop()
+        pass
+
     pass
 
 
