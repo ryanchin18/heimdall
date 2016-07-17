@@ -1,11 +1,12 @@
 __author__ = 'grainier'
 
 import graph_tool.all as gt
-from common.graphs import GraphReference, SingletonGraph
+
+import os
+import redis
 from common import REDIS_POOL, current_time_milliseconds, redis_key_template, root_dir
 from common.exceptions import VertexDoesNotExists, PropertyDoesNotExists, EdgeDoesNotExists
-import redis
-import os
+from common.graphs import GraphReference, SingletonGraph
 
 
 class SessionGraph(GraphReference):
@@ -102,7 +103,7 @@ class SessionGraph(GraphReference):
         try:
             self.graph.graph_properties[property_key] = property_value
             pass
-        except KeyError, e:
+        except (KeyError, ValueError) as e:
             prop = self.graph.new_graph_property(property_type)
             self.graph.graph_properties[property_key] = prop
             self.graph.graph_properties[property_key] = property_value
@@ -155,7 +156,7 @@ class SessionGraph(GraphReference):
         if v:
             try:
                 return self.graph.vertex_properties[property_key][v]
-            except KeyError, e:
+            except (KeyError, ValueError), e:
                 raise PropertyDoesNotExists()
             pass
         else:
@@ -187,7 +188,7 @@ class SessionGraph(GraphReference):
                 pass
             else:
                 e = None
-        except ValueError, e:
+        except (KeyError, ValueError), e:
             e = None
             pass
 
@@ -216,7 +217,7 @@ class SessionGraph(GraphReference):
             v_index = self.redis.get(redis_key_template.format(self.session, "vertex", vertex_id))
             v = self.graph.vertex(v_index)
             v = v if v.is_valid() else None
-        except TypeError as e:
+        except (TypeError, ValueError) as e:
             v = None
             pass
         return v

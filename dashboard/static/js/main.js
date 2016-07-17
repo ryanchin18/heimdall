@@ -1,64 +1,64 @@
 /** --------- Constants --------- */
 var TRAFFIC_SUMMARY_UPDATE_INTERVAL = 10000;
 var IP_SUMMARY_UPDATE_INTERVAL = 5000;
-var SERVICE_URL = "/orion/api/v1.0";
+var SERVICE_URL = "/heimdall/api/v1.0";
 
-/** --------- Orion API --------- */
-var orion = orion || {};
-orion.SERVICE_URL = SERVICE_URL;
+/** --------- Heimdall API --------- */
+var heimdall_js = heimdall_js || {};
+heimdall_js.SERVICE_URL = SERVICE_URL;
 
-orion.traffic_summary = function (callback) {
+heimdall_js.traffic_summary = function (callback) {
     $.ajax({
-        url: orion.SERVICE_URL + "/traffic_summary",
+        url: heimdall_js.SERVICE_URL + "/traffic_summary",
         crossDomain: true,
         method: 'GET',
         success: function (data) {
             callback(data);
         },
         error: function () {
-            console.error('ERROR | orion.traffic_summary() | Failed to retrieve traffic_summary.');
+            console.error('ERROR | heimdall_js.traffic_summary() | Failed to retrieve traffic_summary.');
         }
     });
 };
 
-orion.ip_summary = function (ip, callback) {
+heimdall_js.ip_summary = function (ip, callback) {
     $.ajax({
-        url: orion.SERVICE_URL + "/ip_summary/" + ip,
+        url: heimdall_js.SERVICE_URL + "/ip_summary/" + ip,
         crossDomain: true,
         method: 'GET',
         success: function (data) {
             callback(data);
         },
         error: function () {
-            console.error('ERROR | orion.ip_summary() | Failed to retrieve ip_summary.');
+            console.error('ERROR | heimdall_js.ip_summary() | Failed to retrieve ip_summary.');
         }
     });
 };
 
-orion.ban_ip = function (ip, callback) {
+heimdall_js.ban_ip = function (ip, callback) {
     $.ajax({
-        url: orion.SERVICE_URL + "/ban_ip/" + ip,
+        url: heimdall_js.SERVICE_URL + "/ban_ip/" + ip,
         crossDomain: true,
         method: 'PUT',
         success: function (data) {
             callback(data);
         },
         error: function () {
-            console.error('ERROR | orion.ban_ip() | Failed to ban_ip.');
+            console.error('ERROR | heimdall_js.ban_ip() | Failed to ban_ip.');
         }
     });
 };
 
-orion.unban_ip = function (ip, callback) {
+heimdall_js.unban_ip = function (ip, callback) {
     $.ajax({
-        url: orion.SERVICE_URL + "/unban_ip/" + ip,
+        url: heimdall_js.SERVICE_URL + "/unban_ip/" + ip,
         crossDomain: true,
         method: 'PUT',
         success: function (data) {
             callback(data);
         },
         error: function () {
-            console.error('ERROR | orion.unban_ip() | Failed to unban_ip.');
+            console.error('ERROR | heimdall_js.unban_ip() | Failed to unban_ip.');
         }
     });
 };
@@ -86,11 +86,11 @@ var SessionSummary = function (session, is_ddos, probability, is_ban) {
 
     this.toggle_ban = function (event, state) {
         if (!state) {
-            orion.unban_ip(scope.session, function (data) {
+            heimdall_js.unban_ip(scope.session, function (data) {
                 console.log("Un-banned :" + scope.session);
             });
         } else {
-            orion.ban_ip(scope.session, function (data) {
+            heimdall_js.ban_ip(scope.session, function (data) {
                 console.log("Banned " + scope.session);
             });
         }
@@ -128,10 +128,10 @@ var Session = function () {
 
     this.trigger = ko.computed(function () {
         // update ip summary each X seconds
-        orion.ip_summary(scope.session(), scope.update);
+        heimdall_js.ip_summary(scope.session(), scope.update);
         scope.si = setInterval(function () {
             if (modal_opened) {
-                orion.ip_summary(scope.session(), scope.update);
+                heimdall_js.ip_summary(scope.session(), scope.update);
                 console.log("IP summary updated for " + scope.session());
             }
         }, IP_SUMMARY_UPDATE_INTERVAL);
@@ -169,10 +169,10 @@ var SessionList = function () {
     }.bind(this);
 
     // update traffic summary each 5 seconds
-    orion.traffic_summary(scope.updateList);
+    heimdall_js.traffic_summary(scope.updateList);
     setInterval(function () {
         if (!modal_opened) {
-            orion.traffic_summary(scope.updateList);
+            heimdall_js.traffic_summary(scope.updateList);
             console.log("Traffic summary updated");
         } else {
             console.log("Session info modal opened, not updating traffic summary");

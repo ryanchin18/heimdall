@@ -125,8 +125,8 @@ for f_key in factors:
 path = os.path.join(
     root_dir,
     "generated",
-    "training_data",
-    "training_data_{0}.npy".format(time.strftime("%Y_%m_%d_%H:%M"))
+    "training_data"
 )
-np.save(path, training_data)
+np.save(path + "/training_data_{0}.npy".format(time.strftime("%Y_%m_%d_%H:%M")), training_data)
+np.savetxt(path + "/training_data_{0}.csv".format(time.strftime("%Y_%m_%d_%H:%M")), training_data, delimiter=",")
 print "done"

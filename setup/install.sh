@@ -1,7 +1,7 @@
 #!/bin/bash
 #################################################
 #################################################
-#       Environmet Setup for orion-ids          #
+#       Environment Setup for Heimdall          #
 #################################################
 #################################################
 
@@ -10,7 +10,7 @@
 #               Define Variables                #
 #-----------------------------------------------#
 # Get this script's location
-ORION_PATH=$( cd $(dirname $0) ; cd ../ ; pwd -P )
+HEIMDALL_PATH=$( cd $(dirname $0) ; cd ../ ; pwd -P )
 
 # Get Ubuntu DISTRIBUTION
 DISTRIBUTION=$(lsb_release -s -c)
@@ -42,7 +42,7 @@ LIST_OF_EASY_INSTALL="
 if [[ "${PYTHONPATH}" =~ "${ORION_PATH}" ]]; then
     echo "PYTHONPATH already exists"
 else
-    echo "export PYTHONPATH=$PYTHONPATH:${ORION_PATH}" >> ~/.bashrc
+    echo "export PYTHONPATH=$PYTHONPATH:${HEIMDALL_PATH}" >> ~/.bashrc
     . ~/.bashrc
 fi
 
@@ -57,7 +57,7 @@ echo "deb http://downloads.skewed.de/apt/${DISTRIBUTION} ${DISTRIBUTION} univers
 echo "deb-src http://downloads.skewed.de/apt/${DISTRIBUTION} ${DISTRIBUTION} universe" | sudo tee -a /etc/apt/sources.list.d/graph_tool.list
 
 # Add PGP key
-sudo apt-key add ${ORION_PATH}/setup/graph_tool.key
+sudo apt-key add ${HEIMDALL_PATH}/setup/graph_tool.key
 
 
 #-----------------------------------------------#
@@ -77,14 +77,14 @@ sudo apt-get install -y ${LIST_OF_APPS}
 sudo easy_install-2.7 ${LIST_OF_EASY_INSTALL}
 
 # Install required python libraries
-sudo pip install -r ${ORION_PATH}/requirements.txt
+sudo pip install -r ${HEIMDALL_PATH}/requirements.txt
 
 
 #-----------------------------------------------#
 #       Finalize Environment Installation       #
 #-----------------------------------------------#
 # Back to script dir
-cd ${ORION_PATH}
+cd ${HEIMDALL_PATH}
 
 # Environment setup completed
 echo "***********************************************************************"

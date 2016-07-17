@@ -18,12 +18,12 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "imad", ["interceptor", "modeller", "analyser", "dashboard", "help"])
     except getopt.GetoptError:
-        print 'orion.py -imad'
+        print 'heimdall.py -imad'
         sys.exit(2)
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
-            print 'orion.py -imad'
+            print 'heimdall.py -imad'
             sys.exit()
 
         elif opt in ("-i", "--interceptor"):
@@ -62,7 +62,7 @@ def main(argv):
             # loop to keep modeller and analyser running
             pass
     except KeyboardInterrupt:
-        print "stopping orion detection system"
+        print "stopping heimdall_js detection system"
         pass
 
     # this is only reachable once the reactor

@@ -29,7 +29,7 @@ def index():
 
 
 # get traffic summary
-@app.route('/orion/api/v1.0/traffic_summary', methods=['GET'])
+@app.route('/heimdall/api/v1.0/traffic_summary', methods=['GET'])
 @nocache
 def get_traffic_summary():
     try:
@@ -45,7 +45,7 @@ def get_traffic_summary():
 
 
 # get activity of a ip
-@app.route('/orion/api/v1.0/ip_summary/<ip>', methods=['GET'])
+@app.route('/heimdall/api/v1.0/ip_summary/<ip>', methods=['GET'])
 @nocache
 def get_ip_summary(ip):
     sr = SeverityRecord(ip)
@@ -64,7 +64,7 @@ def get_ip_summary(ip):
         pass
 
     sr['factors'] = factors
-    sr['request_graph'] = "/orion/api/v1.0/request_graph/{0}".format(ip)
+    sr['request_graph'] = "/heimdall/api/v1.0/request_graph/{0}".format(ip)
 
     return jsonify({
         'status': 'success',
@@ -74,7 +74,7 @@ def get_ip_summary(ip):
 
 
 # ban IP
-@app.route('/orion/api/v1.0/ban_ip/<ip>', methods=['PUT'])
+@app.route('/heimdall/api/v1.0/ban_ip/<ip>', methods=['PUT'])
 @nocache
 def ban_ip(ip):
     sr = SeverityRecord(ip)
@@ -86,7 +86,7 @@ def ban_ip(ip):
 
 
 # un ban IP
-@app.route('/orion/api/v1.0/unban_ip/<ip>', methods=['PUT'])
+@app.route('/heimdall/api/v1.0/unban_ip/<ip>', methods=['PUT'])
 @nocache
 def unban_ip(ip):
     sr = SeverityRecord(ip)
@@ -98,7 +98,7 @@ def unban_ip(ip):
 
 
 # get request graph
-@app.route('/orion/api/v1.0/request_graph/<ip>', methods=['GET'])
+@app.route('/heimdall/api/v1.0/request_graph/<ip>', methods=['GET'])
 @nocache
 def get_request_graph(ip):
     sg = SessionGraph(ip)
