@@ -39,7 +39,7 @@ LIST_OF_EASY_INSTALL="
 #-----------------------------------------------#
 #          Add Enrivonment Variable             #
 #-----------------------------------------------#
-if [[ "${PYTHONPATH}" =~ "${ORION_PATH}" ]]; then
+if [[ "${PYTHONPATH}" =~ "${HEIMDALL_PATH}" ]]; then
     echo "PYTHONPATH already exists"
 else
     echo "export PYTHONPATH=$PYTHONPATH:${HEIMDALL_PATH}" >> ~/.bashrc
