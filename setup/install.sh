@@ -20,14 +20,26 @@ LIST_OF_APPS="
     build-essential
     python-dev
     python-setuptools
-    python-numpy
-    python-scipy
-    python-matplotlib
     python-software-properties
-    python-graph-tool
     redis-server
     libatlas-dev
     libatlas3gf-base
+	expat
+	libsparsehash-dev
+	gtk+3
+	libboost-all-dev
+	graphviz
+	libcairo2-dev
+	python-pip
+	python-matplotlib
+	gfortran
+	libopenblas-dev
+	liblapack-dev
+	libcgal-dev
+	python-numpy
+	python2.7-config
+	python-cairo
+	python-scipy
     "
 
 # List of easy install applications to install
@@ -46,33 +58,39 @@ else
     . ~/.bashrc
 fi
 
+#-----------------------------------------------#
+#          Add repositories                     #
+#-----------------------------------------------#
+sudo add-apt-repository -y ppa:rwky/redis
+sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+
+
+#-----------------------------------------------#
+#          Install apt-get Packages             #
+#-----------------------------------------------#
+# Install apt-get packages
+sudo apt-get update
+sudo apt-get -y upgrade
+sudo apt-get install -y ${LIST_OF_APPS}
 
 #-----------------------------------------------#
 #           Installing Graph Tools              #
 #-----------------------------------------------#
 # Visit http://graph-tool.skewed.de/download#debian for more information
+# Add PGP key
+sudo apt-key adv --keyserver pgp.skewed.de --recv-key 98507F25
+# sudo apt-key add ${HEIMDALL_PATH}/setup/graph_tool.key
 
 # Create a list file
 echo "deb http://downloads.skewed.de/apt/${DISTRIBUTION} ${DISTRIBUTION} universe" | sudo tee /etc/apt/sources.list.d/graph_tool.list
 echo "deb-src http://downloads.skewed.de/apt/${DISTRIBUTION} ${DISTRIBUTION} universe" | sudo tee -a /etc/apt/sources.list.d/graph_tool.list
 
-# Add PGP key
-sudo apt-key add ${HEIMDALL_PATH}/setup/graph_tool.key
-
-
-#-----------------------------------------------#
-#           Installing Redis Server             #
-#-----------------------------------------------#
-sudo add-apt-repository -y ppa:rwky/redis
-
-
-#-----------------------------------------------#
-#          Install defined Packages             #
-#-----------------------------------------------#
-# Install apt-get packages
 sudo apt-get update
-sudo apt-get install -y ${LIST_OF_APPS}
+sudo apt-get -y --force-yes install python-graph-tool
 
+#-----------------------------------------------#
+#           Installing python packages          #
+#-----------------------------------------------#
 # Install easy_install packages
 sudo easy_install-2.7 ${LIST_OF_EASY_INSTALL}
 
